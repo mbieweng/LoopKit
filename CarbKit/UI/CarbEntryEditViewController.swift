@@ -10,17 +10,30 @@ import UIKit
 import HealthKit
 
 
-public final class CarbEntryEditViewController: UITableViewController, DatePickerTableViewCellDelegate, TextFieldTableViewCellDelegate {
-
+public final class CarbEntryEditViewController: UITableViewController {
+    
+    var navigationDelegate = CarbEntryNavigationDelegate()
+    
     public var defaultAbsorptionTimes: CarbStore.DefaultAbsorptionTimes? {
         didSet {
-            if originalCarbEntry == nil, let times = defaultAbsorptionTimes {
-                absorptionTime = times.1
+            if let times = defaultAbsorptionTimes {
+                orderedAbsorptionTimes = [times.fast, times.medium, times.slow]
             }
         }
     }
 
-    public var preferredUnit: HKUnit = HKUnit.gram()
+    fileprivate var orderedAbsorptionTimes = [TimeInterval]()
+
+    public var preferredUnit = HKUnit.gram()
+
+    public var maxQuantity = HKQuantity(unit: .gram(), doubleValue: 250)
+
+    /// Entry configuration values. Must be set before presenting.
+    public var absorptionTimePickerInterval = TimeInterval(minutes: 30)
+
+    public var maxAbsorptionTime = TimeInterval(hours: 8)
+
+    public var maximumDateFutureInterval = TimeInterval(hours: 4)
 
     public var originalCarbEntry: CarbEntry? {
         didSet {
@@ -29,27 +42,40 @@ public final class CarbEntryEditViewController: UITableViewController, DatePicke
                 date = entry.startDate
                 foodType = entry.foodType
                 absorptionTime = entry.absorptionTime
+
+                absorptionTimeWasEdited = true
+                usesCustomFoodType = true
             }
         }
     }
 
-    private var quantity: HKQuantity?
+    fileprivate var quantity: HKQuantity?
 
-    private var date = Date()
+    fileprivate var date = Date()
 
-    private var foodType: String?
+    fileprivate var foodType: String?
 
-    private var absorptionTime: TimeInterval?
+    fileprivate var absorptionTime: TimeInterval?
+
+    fileprivate var absorptionTimeWasEdited = false
+
+    fileprivate var usesCustomFoodType = false
 
     public var updatedCarbEntry: CarbEntry? {
-        if let  quantity = quantity,
-                let absorptionTime = absorptionTime
+        if  let quantity = quantity,
+            let absorptionTime = absorptionTime ?? defaultAbsorptionTimes?.medium
         {
             if let o = originalCarbEntry, o.quantity == quantity && o.startDate == date && o.foodType == foodType && o.absorptionTime == absorptionTime {
                 return nil  // No changes were made
             }
-
-            return NewCarbEntry(quantity: quantity, startDate: date, foodType: foodType, absorptionTime: absorptionTime, externalId: originalCarbEntry?.externalId)
+            
+            return NewCarbEntry(
+                quantity: quantity,
+                startDate: date,
+                foodType: foodType,
+                absorptionTime: absorptionTime,
+                externalID: originalCarbEntry?.externalID
+            )
         } else {
             return nil
         }
@@ -62,7 +88,9 @@ public final class CarbEntryEditViewController: UITableViewController, DatePicke
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 44
+        tableView.register(DatePickerTableViewCell.nib(), forCellReuseIdentifier: DatePickerTableViewCell.className)
 
         if originalCarbEntry != nil {
             title = NSLocalizedString("carb-entry-title-edit", tableName: "CarbKit", value: "Edit Carb Entry", comment: "The title of the view controller to edit an existing carb entry")
@@ -71,16 +99,19 @@ public final class CarbEntryEditViewController: UITableViewController, DatePicke
         }
     }
 
-    @IBOutlet var segmentedControlInputAccessoryView: SegmentedControlInputAccessoryView!
+    private var foodKeyboard: CarbAbsorptionInputController!
 
     @IBOutlet weak var saveButtonItem: UIBarButtonItem!
 
     // MARK: - Table view data source
 
-    private enum Row: Int {
+    fileprivate enum Row: Int {
         case value
         case date
+        case foodType
         case absorptionTime
+
+        static let count = 4
     }
 
     public override func numberOfSections(in tableView: UITableView) -> Int {
@@ -88,7 +119,7 @@ public final class CarbEntryEditViewController: UITableViewController, DatePicke
     }
 
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return Row.count
     }
 
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -97,91 +128,230 @@ public final class CarbEntryEditViewController: UITableViewController, DatePicke
             let cell = tableView.dequeueReusableCell(withIdentifier: DecimalTextFieldTableViewCell.className) as! DecimalTextFieldTableViewCell
 
             if let quantity = quantity {
-                cell.number = NSNumber(value: quantity.doubleValue(for: preferredUnit) as Double)
+                cell.number = NSNumber(value: quantity.doubleValue(for: preferredUnit))
             }
             cell.textField.isEnabled = isSampleEditable
-            cell.unitLabel.text = String(describing: preferredUnit)
-            cell.delegate = self
+            cell.unitLabel?.text = String(describing: preferredUnit)
 
             if originalCarbEntry == nil {
                 cell.textField.becomeFirstResponder()
             }
 
+            cell.delegate = self
+
             return cell
         case .date:
             let cell = tableView.dequeueReusableCell(withIdentifier: DatePickerTableViewCell.className) as! DatePickerTableViewCell
 
-            cell.date = date
+            cell.titleLabel.text = NSLocalizedString("Date", comment: "Title of the carb entry date picker cell")
             cell.datePicker.isEnabled = isSampleEditable
+            cell.datePicker.datePickerMode = .dateAndTime
+            cell.datePicker.maximumDate = Date() + maximumDateFutureInterval
+            cell.datePicker.minuteInterval = 1
+            cell.date = date
             cell.delegate = self
 
             return cell
+        case .foodType:
+            if usesCustomFoodType {
+                let cell = tableView.dequeueReusableCell(withIdentifier: TextFieldTableViewCell.className, for: indexPath) as! TextFieldTableViewCell
+
+                cell.textField.text = foodType
+                cell.delegate = self
+
+                if let textField = cell.textField as? CustomInputTextField {
+                    if foodKeyboard == nil {
+                        foodKeyboard = storyboard?.instantiateViewController(withIdentifier: CarbAbsorptionInputController.className) as! CarbAbsorptionInputController
+                        foodKeyboard.delegate = self
+                    }
+
+                    textField.customInput = foodKeyboard
+                }
+
+                if originalCarbEntry == nil {
+                    cell.textField.becomeFirstResponder()
+                }
+
+                return cell
+            } else {
+                let cell = tableView.dequeueReusableCell(withIdentifier: FoodTypeShortcutCell.className, for: indexPath) as! FoodTypeShortcutCell
+
+                if absorptionTime == nil {
+                    cell.selectionState = .medium
+                }
+
+                cell.delegate = self
+
+                return cell
+            }
         case .absorptionTime:
-            let cell = tableView.dequeueReusableCell(withIdentifier: AbsorptionTimeTextFieldTableViewCell.className) as! AbsorptionTimeTextFieldTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: DatePickerTableViewCell.className) as! DatePickerTableViewCell
 
-            if let absorptionTime = absorptionTime {
-                cell.number = NSNumber(value: absorptionTime.minutes as Double)
+            cell.titleLabel.text = NSLocalizedString("Absorption Time", comment: "Title of the carb entry absorption time cell")
+            cell.datePicker.isEnabled = isSampleEditable
+            cell.datePicker.datePickerMode = .countDownTimer
+            cell.datePicker.minuteInterval = Int(absorptionTimePickerInterval.minutes)
+
+            if let duration = absorptionTime ?? defaultAbsorptionTimes?.medium {
+                cell.duration = duration
             }
 
-            if let times = defaultAbsorptionTimes {
-                cell.segmentValues = [times.fast.minutes, times.medium.minutes, times.slow.minutes]
-            }
-            cell.segmentedControlInputAccessoryView = segmentedControlInputAccessoryView
+            cell.maximumDuration = maxAbsorptionTime
             cell.delegate = self
 
             return cell
         }
     }
 
+    public override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return NSLocalizedString("Choose a longer absorption time for larger meals, or those containing fats and proteins. This is only guidance to the algorithm and need not be exact.", comment: "Carb entry section footer text explaining absorption time")
+    }
+
     // MARK: - UITableViewDelegate
 
     public override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-
         tableView.endEditing(false)
         tableView.beginUpdates()
+        hideDatePickerCells(excluding: indexPath)
         return indexPath
     }
 
     public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch tableView.cellForRow(at: indexPath) {
+        case is FoodTypeShortcutCell:
+            usesCustomFoodType = true
+            tableView.reloadRows(at: [IndexPath(row: Row.foodType.rawValue, section: 0)], with: .none)
+        default:
+            break
+        }
+
         tableView.endUpdates()
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
     // MARK: - Navigation
 
-    public override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    public override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         self.tableView.endEditing(true)
 
-        guard let sender = sender as? UIBarButtonItem, sender === saveButtonItem else {
+        guard let button = sender as? UIBarButtonItem, button == saveButtonItem else {
             quantity = nil
-            return
+            return super.shouldPerformSegue(withIdentifier: identifier, sender: sender)
         }
+
+        guard let absorptionTime = absorptionTime ?? defaultAbsorptionTimes?.medium else {
+            return false
+        }
+        guard absorptionTime <= maxAbsorptionTime else {
+            navigationDelegate.showAbsorptionTimeValidationWarning(for: self, maxAbsorptionTime: maxAbsorptionTime)
+            return false
+        }
+
+        guard let quantity = quantity, quantity.doubleValue(for: HKUnit.gram()) > 0 else { return false }
+        guard quantity.compare(maxQuantity) != .orderedDescending else {
+            navigationDelegate.showMaxQuantityValidationWarning(for: self, maxQuantityGrams: maxQuantity.doubleValue(for: .gram()))
+            return false
+        }
+
+        return true
+    }
+}
+
+
+extension CarbEntryEditViewController: TextFieldTableViewCellDelegate {
+    func textFieldTableViewCellDidBeginEditing(_ cell: TextFieldTableViewCell) {
+        // Collapse any date picker cells to save space
+        tableView.beginUpdates()
+        hideDatePickerCells()
+        tableView.endUpdates()
     }
 
-    // MARK: - DatePickerTableViewCellDelegate
+    func textFieldTableViewCellDidEndEditing(_ cell: TextFieldTableViewCell) {
+        guard let row = tableView.indexPath(for: cell)?.row else { return }
 
-    func datePickerTableViewCellDidUpdateDate(_ cell: DatePickerTableViewCell) {
-        date = cell.date as Date
-    }
-
-    // MARK: - TextFieldTableViewCellDelegate
-
-    func textFieldTableViewCellDidUpdateText(_ cell: DecimalTextFieldTableViewCell) {
-        switch Row(rawValue: (tableView.indexPath(for: cell)?.row ?? -1)) {
+        switch Row(rawValue: row) {
         case .value?:
-            if let number = cell.number {
+            if let cell = cell as? DecimalTextFieldTableViewCell, let number = cell.number {
                 quantity = HKQuantity(unit: preferredUnit, doubleValue: number.doubleValue)
             } else {
                 quantity = nil
             }
-        case .absorptionTime?:
-            if let number = cell.number {
-                absorptionTime = TimeInterval(minutes: number.doubleValue)
-            } else {
-                absorptionTime = nil
-            }
+        case .foodType?:
+            foodType = cell.textField.text
         default:
             break
+        }
+    }
+}
+
+
+extension CarbEntryEditViewController: DatePickerTableViewCellDelegate {
+    func datePickerTableViewCellDidUpdateDate(_ cell: DatePickerTableViewCell) {
+        guard let row = tableView.indexPath(for: cell)?.row else { return }
+
+        switch Row(rawValue: row) {
+        case .date?:
+            date = cell.date
+        case .absorptionTime?:
+            absorptionTime = cell.duration
+            absorptionTimeWasEdited = true
+        default:
+            break
+        }
+    }
+}
+
+
+extension CarbEntryEditViewController: FoodTypeShortcutCellDelegate {
+    func foodTypeShortcutCellDidUpdateSelection(_ cell: FoodTypeShortcutCell) {
+        var absorptionTime: TimeInterval?
+
+        switch cell.selectionState {
+        case .fast:
+            absorptionTime = defaultAbsorptionTimes?.fast
+        case .medium:
+            absorptionTime = defaultAbsorptionTimes?.medium
+        case .slow:
+            absorptionTime = defaultAbsorptionTimes?.slow
+        case .custom:
+            tableView.beginUpdates()
+            usesCustomFoodType = true
+            tableView.reloadRows(at: [IndexPath(row: Row.foodType.rawValue, section: 0)], with: .fade)
+            tableView.endUpdates()
+        }
+
+        if let absorptionTime = absorptionTime {
+            self.absorptionTime = absorptionTime
+
+            if let cell = tableView.cellForRow(at: IndexPath(row: Row.absorptionTime.rawValue, section: 0)) as? DatePickerTableViewCell {
+                cell.duration = absorptionTime
+            }
+        }
+    }
+}
+
+
+extension CarbEntryEditViewController: CarbAbsorptionInputControllerDelegate {
+    func carbAbsorptionInputControllerDidAdvanceToStandardInputMode(_ controller: CarbAbsorptionInputController) {
+        if let cell = tableView.cellForRow(at: IndexPath(row: Row.foodType.rawValue, section: 0)) as? TextFieldTableViewCell, let textField = cell.textField as? CustomInputTextField, textField.customInput != nil {
+            let customInput = textField.customInput
+            textField.customInput = nil
+            textField.resignFirstResponder()
+            textField.becomeFirstResponder()
+            textField.customInput = customInput
+        }
+    }
+
+    func carbAbsorptionInputControllerDidSelectItemInSection(_ section: Int) {
+        guard !absorptionTimeWasEdited, section < orderedAbsorptionTimes.count else {
+            return
+        }
+
+        let lastAbsorptionTime = self.absorptionTime
+        self.absorptionTime = orderedAbsorptionTimes[section]
+
+        if let cell = tableView.cellForRow(at: IndexPath(row: Row.absorptionTime.rawValue, section: 0)) as? DatePickerTableViewCell {
+            cell.duration = max(lastAbsorptionTime ?? 0, orderedAbsorptionTimes[section])
         }
     }
 }

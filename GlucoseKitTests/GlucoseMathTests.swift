@@ -16,11 +16,13 @@ public struct GlucoseFixtureValue: GlucoseSampleValue {
     public let startDate: Date
     public let quantity: HKQuantity
     public let isDisplayOnly: Bool
+    public let provenanceIdentifier: String
 
-    public init(startDate: Date, quantity: HKQuantity, isDisplayOnly: Bool) {
+    public init(startDate: Date, quantity: HKQuantity, isDisplayOnly: Bool, provenanceIdentifier: String?) {
         self.startDate = startDate
         self.quantity = quantity
         self.isDisplayOnly = isDisplayOnly
+        self.provenanceIdentifier = provenanceIdentifier ?? "com.loopkit.LoopKitTests"
     }
 }
 
@@ -29,20 +31,21 @@ class GlucoseMathTests: XCTestCase {
 
     func loadInputFixture(_ resourceName: String) -> [GlucoseFixtureValue] {
         let fixture: [JSONDictionary] = loadFixture(resourceName)
-        let dateFormatter = DateFormatter.ISO8601LocalTime()
+        let dateFormatter = ISO8601DateFormatter.localTimeDate()
 
         return fixture.map {
             return GlucoseFixtureValue(
                 startDate: dateFormatter.date(from: $0["date"] as! String)!,
-                quantity: HKQuantity(unit: HKUnit.milligramsPerDeciliterUnit(), doubleValue: $0["amount"] as! Double),
-                isDisplayOnly: ($0["display_only"] as? Bool) ?? false
+                quantity: HKQuantity(unit: HKUnit.milligramsPerDeciliter(), doubleValue: $0["amount"] as! Double),
+                isDisplayOnly: ($0["display_only"] as? Bool) ?? false,
+                provenanceIdentifier: $0["provenance_identifier"] as? String
             )
         }
     }
 
     func loadOutputFixture(_ resourceName: String) -> [GlucoseEffect] {
         let fixture: [JSONDictionary] = loadFixture(resourceName)
-        let dateFormatter = DateFormatter.ISO8601LocalTime()
+        let dateFormatter = ISO8601DateFormatter.localTimeDate()
 
         return fixture.map {
             return GlucoseEffect(startDate: dateFormatter.date(from: $0["date"] as! String)!, quantity: HKQuantity(unit: HKUnit(from: $0["unit"] as! String), doubleValue:$0["amount"] as! Double))
@@ -54,13 +57,13 @@ class GlucoseMathTests: XCTestCase {
         let output = loadOutputFixture("momentum_effect_bouncing_glucose_output")
 
         let effects = GlucoseMath.linearMomentumEffectForGlucoseEntries(input)
-        let unit = HKUnit.milligramsPerDeciliterUnit()
+        let unit = HKUnit.milligramsPerDeciliter()
 
         XCTAssertEqual(output.count, effects.count)
 
         for (expected, calculated) in zip(output, effects) {
             XCTAssertEqual(expected.startDate, calculated.startDate)
-            XCTAssertEqualWithAccuracy(expected.quantity.doubleValue(for: unit), calculated.quantity.doubleValue(for: unit), accuracy: pow(10, -14))
+            XCTAssertEqual(expected.quantity.doubleValue(for: unit), calculated.quantity.doubleValue(for: unit), accuracy: Double(Float.ulpOfOne))
         }
     }
 
@@ -69,13 +72,13 @@ class GlucoseMathTests: XCTestCase {
         let output = loadOutputFixture("momentum_effect_rising_glucose_output")
 
         let effects = GlucoseMath.linearMomentumEffectForGlucoseEntries(input)
-        let unit = HKUnit.milligramsPerDeciliterUnit()
+        let unit = HKUnit.milligramsPerDeciliter()
 
         XCTAssertEqual(output.count, effects.count)
 
         for (expected, calculated) in zip(output, effects) {
             XCTAssertEqual(expected.startDate, calculated.startDate)
-            XCTAssertEqualWithAccuracy(expected.quantity.doubleValue(for: unit), calculated.quantity.doubleValue(for: unit), accuracy: pow(10, -14))
+            XCTAssertEqual(expected.quantity.doubleValue(for: unit), calculated.quantity.doubleValue(for: unit), accuracy: Double(Float.ulpOfOne))
         }
     }
 
@@ -84,13 +87,13 @@ class GlucoseMathTests: XCTestCase {
         let output = loadOutputFixture("momentum_effect_falling_glucose_output")
 
         let effects = GlucoseMath.linearMomentumEffectForGlucoseEntries(input)
-        let unit = HKUnit.milligramsPerDeciliterUnit()
+        let unit = HKUnit.milligramsPerDeciliter()
 
         XCTAssertEqual(output.count, effects.count)
 
         for (expected, calculated) in zip(output, effects) {
             XCTAssertEqual(expected.startDate, calculated.startDate)
-            XCTAssertEqualWithAccuracy(expected.quantity.doubleValue(for: unit), calculated.quantity.doubleValue(for: unit), accuracy: pow(10, -14))
+            XCTAssertEqual(expected.quantity.doubleValue(for: unit), calculated.quantity.doubleValue(for: unit), accuracy: Double(Float.ulpOfOne))
         }
     }
 
@@ -99,14 +102,21 @@ class GlucoseMathTests: XCTestCase {
         let output = loadOutputFixture("momentum_effect_stable_glucose_output")
 
         let effects = GlucoseMath.linearMomentumEffectForGlucoseEntries(input)
-        let unit = HKUnit.milligramsPerDeciliterUnit()
+        let unit = HKUnit.milligramsPerDeciliter()
 
         XCTAssertEqual(output.count, effects.count)
 
         for (expected, calculated) in zip(output, effects) {
             XCTAssertEqual(expected.startDate, calculated.startDate)
-            XCTAssertEqualWithAccuracy(expected.quantity.doubleValue(for: unit), calculated.quantity.doubleValue(for: unit), accuracy: pow(10, -14))
+            XCTAssertEqual(expected.quantity.doubleValue(for: unit), calculated.quantity.doubleValue(for: unit), accuracy: Double(Float.ulpOfOne))
         }
+    }
+
+    func testMomentumEffectForDuplicateGlucose() {
+        let input = loadInputFixture("momentum_effect_duplicate_glucose_input")
+        let effects = GlucoseMath.linearMomentumEffectForGlucoseEntries(input)
+
+        XCTAssertEqual(0, effects.count)
     }
 
     func testMomentumEffectForEmptyGlucose() {
@@ -136,4 +146,13 @@ class GlucoseMathTests: XCTestCase {
 
         XCTAssertEqual(0, effects.count)
     }
+
+    func testMomentumEffectForMixedProvenanceGlucose() {
+        let input = loadInputFixture("momentum_effect_mixed_provenance_glucose_input")
+        let effects = GlucoseMath.linearMomentumEffectForGlucoseEntries(input)
+
+        XCTAssertEqual(0, effects.count)
+    }
+
+
 }

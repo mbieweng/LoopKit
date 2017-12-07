@@ -13,6 +13,19 @@ import LoopKit
 
 class PumpEvent: NSManagedObject {
 
+    var doseType: DoseType? {
+        get {
+            willAccessValue(forKey: "doseType")
+            defer { didAccessValue(forKey: "doseType") }
+            return DoseType(rawValue: primitiveDoseType ?? "")
+        }
+        set {
+            willChangeValue(forKey: "doseType")
+            defer { willChangeValue(forKey: "doseType") }
+            primitiveDoseType = newValue?.rawValue
+        }
+    }
+
     var duration: TimeInterval! {
         get {
             willAccessValue(forKey: "duration")
@@ -22,7 +35,7 @@ class PumpEvent: NSManagedObject {
         set {
             willChangeValue(forKey: "duration")
             defer { didChangeValue(forKey: "duration") }
-            primitiveDuration = newValue != nil ? NSNumber(value: newValue as Double) : nil
+            primitiveDuration = newValue != nil ? NSNumber(value: newValue) : nil
         }
     }
 
@@ -61,7 +74,7 @@ class PumpEvent: NSManagedObject {
         set {
             willChangeValue(forKey: "uploaded")
             defer { didChangeValue(forKey: "uploaded") }
-            primitiveUploaded = NSNumber(value: newValue as Bool)
+            primitiveUploaded = NSNumber(value: newValue)
         }
     }
 
@@ -74,7 +87,7 @@ class PumpEvent: NSManagedObject {
         set {
             willChangeValue(forKey: "value")
             defer { didChangeValue(forKey: "value") }
-            primitiveValue = newValue != nil ? NSNumber(value: newValue! as Double) : nil
+            primitiveValue = newValue != nil ? NSNumber(value: newValue!) : nil
         }
     }
 
@@ -86,13 +99,10 @@ class PumpEvent: NSManagedObject {
 }
 
 
-extension PumpEvent: Fetchable { }
-
-
 extension PumpEvent: TimelineValue {
     var startDate: Date {
         get {
-            return date as Date
+            return date
         }
         set {
             date = newValue
@@ -101,7 +111,7 @@ extension PumpEvent: TimelineValue {
 
     var endDate: Date {
         get {
-            return date.addingTimeInterval(duration) as Date
+            return date.addingTimeInterval(duration)
         }
         set {
             duration = newValue.timeIntervalSince(startDate)
@@ -111,25 +121,43 @@ extension PumpEvent: TimelineValue {
 
 
 extension PumpEvent {
+
     var dose: DoseEntry? {
         get {
+            // To handle migration, we're requiring any dose to also have a PumpEventType
             guard let type = type, let value = value, let unit = unit else {
                 return nil
             }
 
-            return DoseEntry(type: type, startDate: startDate, endDate: endDate, value: value, unit: unit, managedObjectID: objectID)
+            return DoseEntry(
+                type: doseType ?? DoseType(pumpEventType: type)!,
+                startDate: startDate,
+                endDate: endDate,
+                value: value,
+                unit: unit,
+                syncIdentifier: syncIdentifier,
+                managedObjectID: objectID
+            )
         }
         set {
             guard let entry = newValue else {
                 return
             }
-
-            type = entry.type
-            startDate = entry.startDate as Date
-            endDate = entry.endDate as Date
+            
+            doseType = entry.type
+            startDate = entry.startDate
+            endDate = entry.endDate
             value = entry.value
             unit = entry.unit
         }
+    }
+
+    var syncIdentifier: String? {
+        return raw?.hexadecimalString
+    }
+
+    var isUploaded: Bool {
+        return uploaded
     }
 }
 

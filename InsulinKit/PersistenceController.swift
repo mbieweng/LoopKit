@@ -11,12 +11,11 @@ import UIKit
 
 class PersistenceController {
 
-    enum PersistenceControllerError: Error {
+    enum PersistenceControllerError: Error, LocalizedError {
         case configurationError(String)
-        case coreDataError(Error)
+        case coreDataError(NSError)
 
-        // TODO: Drop in favor of `localizedDescription`
-        var description: String {
+        var errorDescription: String? {
             switch self {
             case .configurationError(let description):
                 return description
@@ -25,93 +24,52 @@ class PersistenceController {
             }
         }
 
-        var localizedDescription: String {
-            return description
-        }
-
-        var recoverySuggestion: String {
+        var recoverySuggestion: String? {
             switch self {
             case .configurationError:
                 return "Unrecoverable Error"
             case .coreDataError(let error):
-                return (error as NSError).localizedRecoverySuggestion ?? "Please try again later"
+                return error.localizedRecoverySuggestion
             }
         }
     }
 
-    private let privateManagedObjectContext: NSManagedObjectContext
+    let managedObjectContext: NSManagedObjectContext
 
-    var managedObjectContext: NSManagedObjectContext {
-        return privateManagedObjectContext
+    init(databasePath: String, readyCallback: @escaping (_ error: PersistenceControllerError?) -> Void) {
+        managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
+
+        initializeStack(atPath: databasePath, readyCallback)
     }
 
-    init(readyCallback: @escaping (_ error: PersistenceControllerError?) -> Void) {
-        privateManagedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        privateManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
-
-        initializeStack(readyCallback)
-
-        didEnterBackgroundNotificationObserver = NotificationCenter.default.addObserver(forName: .UIApplicationDidEnterBackground, object: UIApplication.shared, queue: nil, using: handleSave)
-        willResignActiveNotificationObserver = NotificationCenter.default.addObserver(forName: .UIApplicationWillResignActive, object: UIApplication.shared, queue: nil, using: handleSave)
-        willTerminateNotificationObserver = NotificationCenter.default.addObserver(forName: .UIApplicationWillTerminate, object: UIApplication.shared, queue: nil, using: handleSave)
-    }
-
-    deinit {
-        for observer in [didEnterBackgroundNotificationObserver, willResignActiveNotificationObserver, willTerminateNotificationObserver] where observer != nil {
-            NotificationCenter.default.removeObserver(observer!)
-        }
-    }
-
-    private var didEnterBackgroundNotificationObserver: Any?
-    private var willResignActiveNotificationObserver: Any?
-    private var willTerminateNotificationObserver: Any?
-
-    private func handleSave(_ note: Notification) {
-        var taskID: UIBackgroundTaskIdentifier = UIBackgroundTaskInvalid
-
-        taskID = UIApplication.shared.beginBackgroundTask (expirationHandler: { () -> Void in
-            UIApplication.shared.endBackgroundTask(taskID)
-        })
-
-        if taskID != UIBackgroundTaskInvalid {
-            save({ (error) -> Void in
-                // Log the error?
-
-                UIApplication.shared.endBackgroundTask(taskID)
-            })
-        }
-    }
-
-    func save(_ completionHandler: @escaping (_ error: PersistenceControllerError?) -> Void) {
-        self.privateManagedObjectContext.perform { [unowned self] in
+    func save(_ completion: ((_ error: PersistenceControllerError?) -> Void)? = nil) {
+        self.managedObjectContext.perform { [unowned self] in
             do {
-                if self.privateManagedObjectContext.hasChanges {
-                    try self.privateManagedObjectContext.save()
+                if self.managedObjectContext.hasChanges {
+                    try self.managedObjectContext.save()
                 }
 
-                completionHandler(nil)
-            } catch let saveError {
-                completionHandler(.coreDataError(saveError))
+                completion?(nil)
+            } catch let saveError as NSError {
+                completion?(.coreDataError(saveError))
             }
         }
     }
 
     // MARK: - 
 
-    private func initializeStack(_ readyCallback: @escaping (_ error: PersistenceControllerError?) -> Void) {
-        privateManagedObjectContext.perform {
+    private func initializeStack(atPath path: String, _ readyCallback: @escaping (_ error: PersistenceControllerError?) -> Void) {
+        managedObjectContext.perform {
             var error: PersistenceControllerError?
 
             let modelURL = Bundle(for: type(of: self)).url(forResource: "Model", withExtension: "momd")!
-            let model = NSManagedObjectModel(contentsOf: modelURL)!
-            let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
+            let model: NSManagedObjectModel? = NSManagedObjectModel(contentsOf: modelURL)
+            let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model!)
 
-            self.privateManagedObjectContext.persistentStoreCoordinator = coordinator
+            self.managedObjectContext.persistentStoreCoordinator = coordinator
 
-            let bundle = Bundle(for: type(of: self))
-
-            if let  bundleIdentifier = bundle.bundleIdentifier,
-                    let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(bundleIdentifier, isDirectory: true)
+            if let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(path, isDirectory: true)
             {
                 if !FileManager.default.fileExists(atPath: documentsURL.absoluteString) {
                     do {
@@ -129,14 +87,16 @@ class PersistenceController {
                         at: storeURL,
                         options: [
                             NSMigratePersistentStoresAutomaticallyOption: true,
-                            NSInferMappingModelAutomaticallyOption: true
+                            NSInferMappingModelAutomaticallyOption: true,
+                            // Data should be available on reboot before first unlock
+                            NSPersistentStoreFileProtectionKey: FileProtectionType.none
                         ]
                     )
-                } catch let storeError {
+                } catch let storeError as NSError {
                     error = .coreDataError(storeError)
                 }
             } else {
-                error = .configurationError("Cannot configure persistent store for bundle: \(bundle.bundleIdentifier) in directory: \(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))")
+                error = .configurationError("Cannot configure persistent store for path: \(path) in directory: \(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))")
             }
 
             readyCallback(error)

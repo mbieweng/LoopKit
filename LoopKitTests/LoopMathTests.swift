@@ -18,7 +18,7 @@ class LoopMathTests: XCTestCase {
 
     func loadGlucoseEffectFixture(_ resourceName: String) -> [GlucoseEffect] {
         let fixture: [JSONDictionary] = loadFixture(resourceName)
-        let dateFormatter = DateFormatter.ISO8601LocalTime()
+        let dateFormatter = ISO8601DateFormatter.localTimeDate()
 
         return fixture.map {
             return GlucoseEffect(startDate: dateFormatter.date(from: $0["date"] as! String)!, quantity: HKQuantity(unit: HKUnit(from: $0["unit"] as! String), doubleValue:$0["amount"] as! Double))
@@ -27,7 +27,7 @@ class LoopMathTests: XCTestCase {
 
     func loadSampleValueFixture(_ resourceName: String) -> [(startDate: Date, quantity: HKQuantity)] {
         let fixture: [JSONDictionary] = loadFixture(resourceName)
-        let dateFormatter = DateFormatter.ISO8601Strict()
+        let dateFormatter = ISO8601DateFormatter()
 
         return fixture.map {
             (dateFormatter.date(from: $0["startDate"] as! String)!, HKQuantity(unit: HKUnit(from: $0["unit"] as! String), doubleValue: $0["value"] as! Double))
@@ -36,16 +36,16 @@ class LoopMathTests: XCTestCase {
 
     func loadGlucoseHistoryFixture(_ resourceName: String) -> RecentGlucoseValue {
         let fixture: [JSONDictionary] = loadFixture(resourceName)
-        let dateFormatter = DateFormatter.ISO8601LocalTime()
+        let dateFormatter = ISO8601DateFormatter.localTimeDate()
 
         return fixture.map {
-            return RecentGlucoseValue(startDate: dateFormatter.date(from: $0["display_time"] as! String)!, quantity: HKQuantity(unit: HKUnit.milligramsPerDeciliterUnit(), doubleValue:$0["glucose"] as! Double))
+            return RecentGlucoseValue(startDate: dateFormatter.date(from: $0["display_time"] as! String)!, quantity: HKQuantity(unit: HKUnit.milligramsPerDeciliter(), doubleValue:$0["glucose"] as! Double))
         }.first!
     }
 
     func loadGlucoseValueFixture(_ resourceName: String) -> [PredictedGlucoseValue] {
         let fixture: [JSONDictionary] = loadFixture(resourceName)
-        let dateFormatter = DateFormatter.ISO8601LocalTime()
+        let dateFormatter = ISO8601DateFormatter.localTimeDate()
 
         return fixture.map {
             return PredictedGlucoseValue(startDate: dateFormatter.date(from: $0["date"] as! String)!, quantity: HKQuantity(unit: HKUnit(from: $0["unit"] as! String), doubleValue:$0["amount"] as! Double))
@@ -71,7 +71,7 @@ class LoopMathTests: XCTestCase {
 
         for (expected, calculated) in zip(expected, calculated) {
             XCTAssertEqual(expected.startDate, calculated.startDate)
-            XCTAssertEqualWithAccuracy(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), accuracy: pow(10, -11))
+            XCTAssertEqual(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), accuracy: Double(Float.ulpOfOne))
         }
     }
 
@@ -86,7 +86,7 @@ class LoopMathTests: XCTestCase {
 
         for (expected, calculated) in zip(expected, calculated) {
             XCTAssertEqual(expected.startDate, calculated.startDate)
-            XCTAssertEqualWithAccuracy(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), accuracy: pow(10, -11))
+            XCTAssertEqual(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), accuracy: Double(Float.ulpOfOne))
         }
     }
 
@@ -101,7 +101,7 @@ class LoopMathTests: XCTestCase {
 
         for (expected, calculated) in zip(expected, calculated) {
             XCTAssertEqual(expected.startDate, calculated.startDate)
-            XCTAssertEqualWithAccuracy(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), accuracy: pow(10, -11))
+            XCTAssertEqual(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), accuracy: Double(Float.ulpOfOne))
         }
     }
 
@@ -116,7 +116,7 @@ class LoopMathTests: XCTestCase {
 
         for (expected, calculated) in zip(expected, calculated) {
             XCTAssertEqual(expected.startDate, calculated.startDate)
-            XCTAssertEqualWithAccuracy(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), accuracy: pow(10, -11))
+            XCTAssertEqual(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), accuracy: Double(Float.ulpOfOne))
         }
     }
 
@@ -132,7 +132,7 @@ class LoopMathTests: XCTestCase {
 
         for (expected, calculated) in zip(expected, calculated) {
             XCTAssertEqual(expected.startDate, calculated.startDate)
-            XCTAssertEqualWithAccuracy(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), accuracy: pow(10, -11))
+            XCTAssertEqual(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), accuracy: Double(Float.ulpOfOne))
         }
     }
 
@@ -156,7 +156,7 @@ class LoopMathTests: XCTestCase {
 
         for (expected, calculated) in zip(expected, calculated) {
             XCTAssertEqual(expected.startDate, calculated.startDate)
-            XCTAssertEqualWithAccuracy(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliterUnit()), accuracy: pow(10, -11))
+            XCTAssertEqual(expected.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), calculated.quantity.doubleValue(for: HKUnit.milligramsPerDeciliter()), accuracy: Double(Float.ulpOfOne))
         }
     }
 
@@ -164,12 +164,12 @@ class LoopMathTests: XCTestCase {
         let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
         let glucoseDate = calendar.date(from: DateComponents(year: 2016, month: 2, day: 1, hour: 10, minute: 13, second: 20))!
         let type = HKQuantityType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodGlucose)!
-        let unit = HKUnit.milligramsPerDeciliterUnit()
+        let unit = HKUnit.milligramsPerDeciliter()
         let glucose = HKQuantitySample(type: type, quantity: HKQuantity(unit: unit, doubleValue: 100), start: glucoseDate, end: glucoseDate)
 
         var startingEffect = HKQuantity(unit: unit.unitDivided(by: HKUnit.minute()), doubleValue: 2)
 
-        var effects = LoopMath.decayEffect(from: glucose, atRate: startingEffect, for: TimeInterval(30 * 60))
+        var effects = LoopMath.decayEffect(from: glucose, atRate: startingEffect, for: .minutes(30))
 
         XCTAssertEqual([100, 110, 118, 124, 128, 130, 130], effects.map { $0.quantity.doubleValue(for: unit) })
 
@@ -177,7 +177,7 @@ class LoopMathTests: XCTestCase {
         XCTAssertEqual([0, 5, 10, 15, 20, 25, 30], effects.map { $0.startDate.timeIntervalSince(startDate).minutes })
 
         startingEffect = HKQuantity(unit: unit.unitDivided(by: HKUnit.minute()), doubleValue: -0.5)
-        effects = LoopMath.decayEffect(from: glucose, atRate: startingEffect, for: TimeInterval(30 * 60))
+        effects = LoopMath.decayEffect(from: glucose, atRate: startingEffect, for: .minutes(30))
         XCTAssertEqual([100, 97.5, 95.5, 94, 93, 92.5, 92.5], effects.map { $0.quantity.doubleValue(for: unit) })
     }
 
@@ -185,12 +185,12 @@ class LoopMathTests: XCTestCase {
         let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
         let glucoseDate = calendar.date(from: DateComponents(year: 2016, month: 2, day: 1, hour: 10, minute: 15, second: 0))!
         let type = HKQuantityType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bloodGlucose)!
-        let unit = HKUnit.milligramsPerDeciliterUnit()
+        let unit = HKUnit.milligramsPerDeciliter()
         let glucose = HKQuantitySample(type: type, quantity: HKQuantity(unit: unit, doubleValue: 100), start: glucoseDate, end: glucoseDate)
 
         var startingEffect = HKQuantity(unit: unit.unitDivided(by: HKUnit.minute()), doubleValue: 2)
 
-        var effects = LoopMath.decayEffect(from: glucose, atRate: startingEffect, for: TimeInterval(30 * 60))
+        var effects = LoopMath.decayEffect(from: glucose, atRate: startingEffect, for: .minutes(30))
 
         XCTAssertEqual([100, 110, 118, 124, 128, 130], effects.map { $0.quantity.doubleValue(for: unit) })
 
@@ -198,7 +198,7 @@ class LoopMathTests: XCTestCase {
         XCTAssertEqual([0, 5, 10, 15, 20, 25], effects.map { $0.startDate.timeIntervalSince(startDate).minutes })
 
         startingEffect = HKQuantity(unit: unit.unitDivided(by: HKUnit.minute()), doubleValue: -0.5)
-        effects = LoopMath.decayEffect(from: glucose, atRate: startingEffect, for: TimeInterval(30 * 60))
+        effects = LoopMath.decayEffect(from: glucose, atRate: startingEffect, for: .minutes(30))
         XCTAssertEqual([100, 97.5, 95.5, 94, 93, 92.5], effects.map { $0.quantity.doubleValue(for: unit) })
     }
 }

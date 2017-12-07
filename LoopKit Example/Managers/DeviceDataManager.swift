@@ -9,6 +9,7 @@
 import Foundation
 import CarbKit
 import GlucoseKit
+import HealthKit
 import InsulinKit
 import LoopKit
 
@@ -18,26 +19,36 @@ class DeviceDataManager : CarbStoreDelegate {
     static let shared = DeviceDataManager()
 
     init() {
+        let healthStore = HKHealthStore()
+
         carbStore = CarbStore(
+            healthStore: healthStore,
             carbRatioSchedule: carbRatioSchedule,
             insulinSensitivitySchedule: insulinSensitivitySchedule
         )
+        let insulinModel: WalshInsulinModel?
+        if let actionDuration = insulinActionDuration {
+            insulinModel = WalshInsulinModel(actionDuration: actionDuration)
+        } else {
+            insulinModel = nil
+        }
         doseStore = DoseStore(
-            pumpID: pumpID,
-            insulinActionDuration: insulinActionDuration,
+            healthStore: healthStore,
+            insulinModel: insulinModel,
             basalProfile: basalRateSchedule,
             insulinSensitivitySchedule: insulinSensitivitySchedule
         )
+        glucoseStore = GlucoseStore(healthStore: healthStore)
         carbStore?.delegate = self
     }
 
     // Data stores
 
-    let carbStore: CarbStore?
+    let carbStore: CarbStore!
 
     let doseStore: DoseStore
 
-    let glucoseStore = GlucoseStore()
+    let glucoseStore: GlucoseStore!
 
     // Settings
 
@@ -84,7 +95,9 @@ class DeviceDataManager : CarbStoreDelegate {
         didSet {
             UserDefaults.standard.pumpID = pumpID
 
-            doseStore.pumpID = pumpID
+            if pumpID != oldValue {
+                doseStore.resetPumpData()
+            }
         }
     }
 

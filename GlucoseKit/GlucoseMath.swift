@@ -15,7 +15,7 @@ import LoopKit
 private let ContinuousGlucoseInterval = TimeInterval(minutes: 5)
 
 /// The unit to use during calculation
-private let CalculationUnit = HKUnit.milligramsPerDeciliterUnit()
+private let CalculationUnit = HKUnit.milligramsPerDeciliter()
 
 
 struct GlucoseMath {
@@ -61,6 +61,22 @@ struct GlucoseMath {
         return samples.filter({ $0.isDisplayOnly }).count == 0
     }
 
+    /// Filters a timeline of glucose samples to only include those after the last calibration.
+    ///
+    /// - Parameter samples: The timeline of glucose samples, in chronological order
+    /// - Returns: A filtered timeline
+    static func filterAfterCalibration<T: BidirectionalCollection>(_ samples: T) -> [T.Iterator.Element] where T.Iterator.Element: GlucoseSampleValue, T.Index == Int {
+        var postCalibration = true
+
+        return samples.reversed().filter({ (sample) in
+            if sample.isDisplayOnly {
+                postCalibration = false
+            }
+
+            return postCalibration
+        }).reversed()
+    }
+
     /**
      Determines whether a collection of glucose samples can be considered continuous.
      
@@ -80,6 +96,22 @@ struct GlucoseMath {
         return false
     }
 
+    /// Determines whether a collection of glucose samples is all from the same source.
+    ///
+    /// - Parameter samples: The sequence of glucose
+    /// - Returns: True if the samples all have the same source
+    static func hasSingleProvenance<T: Collection>(_ samples: T) -> Bool where T.Iterator.Element: GlucoseSampleValue {
+        let firstProvenance = samples.first?.provenanceIdentifier
+
+        for sample in samples {
+            if sample.provenanceIdentifier != firstProvenance {
+                return false
+            }
+        }
+
+        return true
+    }
+
     /**
      Calculates the short-term predicted trend of a sequence of glucose values using linear regression
 
@@ -96,7 +128,7 @@ struct GlucoseMath {
     ) -> [GlucoseEffect] where T.Iterator.Element: GlucoseSampleValue, T.Index == Int, T.IndexDistance == Int {
         guard
             samples.count > 2,  // Linear regression isn't much use without 3 or more entries.
-            isContinuous(samples) && isCalibrated(samples),
+            isContinuous(samples) && isCalibrated(samples) && hasSingleProvenance(samples),
             let firstSample = samples.first,
             let lastSample = samples.last,
             let (startDate, endDate) = LoopMath.simulationDateRangeForSamples([lastSample], duration: duration, delta: delta)
@@ -111,6 +143,10 @@ struct GlucoseMath {
 
         let (slope: slope, intercept: _) = linearRegression(xy)
 
+        guard slope.isFinite else {
+            return []
+        }
+
         var date = startDate
         var values = [GlucoseEffect]()
 
@@ -122,5 +158,65 @@ struct GlucoseMath {
         } while date <= endDate
 
         return values
+    }
+
+    /// Calculates a timeline of effect velocity (glucose/time) observed in glucose readings that counteract the specified effects.
+    ///
+    /// - Parameters:
+    ///   - glucoseSamples: Glucose samples in chronological order
+    ///   - effects: Glucose effects to be countered, in chronological order
+    /// - Returns: An array of velocities describing the change in glucose samples compared to the specified effects
+    public static func counteractionEffects(of glucoseSamples: [GlucoseSampleValue], to effects: [GlucoseEffect]) -> [GlucoseEffectVelocity] {
+        let mgdL = HKUnit.milligramsPerDeciliter()
+        let velocityUnit = mgdL.unitDivided(by: .second())
+        var velocities = [GlucoseEffectVelocity]()
+        var effectIndex = 0
+
+        for (index, endGlucose) in glucoseSamples.dropFirst().enumerated() {
+            // Find a valid change in glucose, requiring identical provenance and no calibration
+            let startGlucose = glucoseSamples[index]
+
+            guard startGlucose.provenanceIdentifier == endGlucose.provenanceIdentifier,
+                !startGlucose.isDisplayOnly, !endGlucose.isDisplayOnly
+            else {
+                continue
+            }
+
+            let glucoseChange = endGlucose.quantity.doubleValue(for: mgdL) - startGlucose.quantity.doubleValue(for: mgdL)
+
+            // Compare that to a change in insulin effects
+            guard effects.count > effectIndex else {
+                break
+            }
+
+            var startEffect: GlucoseEffect?
+            var endEffect: GlucoseEffect?
+
+            for effect in effects[effectIndex..<effects.count] {
+                if startEffect == nil && effect.startDate >= startGlucose.startDate {
+                    startEffect = effect
+                } else if endEffect == nil && effect.startDate >= endGlucose.startDate {
+                    endEffect = effect
+                    break
+                }
+
+                effectIndex += 1
+            }
+
+            guard let startEffectValue = startEffect?.quantity.doubleValue(for: mgdL),
+                let endEffectValue = endEffect?.quantity.doubleValue(for: mgdL)
+            else {
+                break
+            }
+
+            let effectChange = endEffectValue - startEffectValue
+            let discrepancy = glucoseChange - effectChange
+            let averageVelocity = HKQuantity(unit: velocityUnit, doubleValue: discrepancy / endGlucose.startDate.timeIntervalSince(startGlucose.startDate))
+            let effect = GlucoseEffectVelocity(startDate: startGlucose.startDate, endDate: endGlucose.startDate, quantity: averageVelocity)
+            
+            velocities.append(effect)
+        }
+        
+        return velocities
     }
 }

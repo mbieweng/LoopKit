@@ -13,7 +13,11 @@ let MetadataKeyGlucoseIsDisplayOnly = "com.loudnate.GlucoseKit.HKMetadataKey.Glu
 
 
 extension HKQuantitySample: GlucoseSampleValue {
-    var isDisplayOnly: Bool {
+    public var isDisplayOnly: Bool {
         return metadata?[MetadataKeyGlucoseIsDisplayOnly] as? Bool ?? false
+    }
+
+    public var provenanceIdentifier: String {
+        return sourceRevision.source.bundleIdentifier
     }
 }

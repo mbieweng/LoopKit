@@ -33,7 +33,14 @@ public class CommandResponseViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        textView.font = UIFont(name: "Menlo-Regular", size: 14)
+        let font = UIFont(name: "Menlo-Regular", size: 14)
+        if #available(iOS 11.0, *), let font = font {
+            let metrics = UIFontMetrics(forTextStyle: .body)
+            textView.font = metrics.scaledFont(for: font)
+        } else {
+            textView.font = font
+        }
+
         textView.text = command { [weak self] (responseText) -> Void in
             self?.textView.text = responseText
         }
@@ -54,7 +61,7 @@ extension CommandResponseViewController: UIActivityItemSource {
         return title ?? textView.text ?? ""
     }
 
-    public func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivityType) -> Any? {
+    public func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivityType?) -> Any? {
         return textView.attributedText ?? ""
     }
 
