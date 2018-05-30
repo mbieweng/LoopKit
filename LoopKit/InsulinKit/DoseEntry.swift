@@ -7,11 +7,10 @@
 //
 
 import Foundation
-import CoreData
 import HealthKit
 
 
-public struct DoseEntry: TimelineValue {
+public struct DoseEntry: TimelineValue, Equatable {
     public let type: DoseType
     public let startDate: Date
     public let endDate: Date
@@ -19,14 +18,9 @@ public struct DoseEntry: TimelineValue {
     public let unit: DoseUnit
     public let description: String?
     internal(set) public var syncIdentifier: String?
-    let managedObjectID: NSManagedObjectID?
 
     /// The scheduled basal rate during this dose entry
     internal var scheduledBasalRate: HKQuantity?
-
-    public init(type: DoseType, startDate: Date, endDate: Date? = nil, value: Double, unit: DoseUnit, description: String? = nil) {
-        self.init(type: type, startDate: startDate, endDate: endDate, value: value, unit: unit, description: description, syncIdentifier: nil, managedObjectID: nil)
-    }
 
     public init(suspendDate: Date) {
         self.init(type: .suspend, startDate: suspendDate, value: 0, unit: .units)
@@ -36,7 +30,7 @@ public struct DoseEntry: TimelineValue {
         self.init(type: .resume, startDate: resumeDate, value: 0, unit: .units)
     }
 
-    init(type: DoseType, startDate: Date, endDate: Date? = nil, value: Double, unit: DoseUnit, description: String? = nil, syncIdentifier: String?, managedObjectID: NSManagedObjectID?) {
+    public init(type: DoseType, startDate: Date, endDate: Date? = nil, value: Double, unit: DoseUnit, description: String? = nil, syncIdentifier: String? = nil, scheduledBasalRate: HKQuantity? = nil) {
         self.type = type
         self.startDate = startDate
         self.endDate = endDate ?? startDate
@@ -44,7 +38,7 @@ public struct DoseEntry: TimelineValue {
         self.unit = unit
         self.description = description
         self.syncIdentifier = syncIdentifier
-        self.managedObjectID = managedObjectID
+        self.scheduledBasalRate = scheduledBasalRate
     }
 }
 
