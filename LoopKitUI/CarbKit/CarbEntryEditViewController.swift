@@ -140,7 +140,7 @@ public final class CarbEntryEditViewController: UITableViewController {
                 return NewCarbEntry(
                     quantity: HKQuantity(unit: .gram(), doubleValue: carbEquivilant),
                     startDate: date + 60 * onsetDelay,
-                    foodType: foodType,
+                    foodType: "FPU",
                     absorptionTime: .hours(squareWaveDuration),
                     externalID: originalCarbEntry?.externalID)
             } else {
