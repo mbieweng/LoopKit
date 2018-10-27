@@ -125,7 +125,7 @@ public final class CarbEntryEditViewController: UITableViewController {
      
             let carbEquivilant = FPU * 10 * lowCarbMultiplier
      
-                    /*The first two hours is to generalize the research-paper equation. But then add 3 more hours to the Loop absorption time to better mimic the effect of the duration of a pump square-wave (because the insulin will still have significant effect for about three hours after the square-wave ends). This does not need to be exact because individuals will tune it to their personal response using the FPU-Ratio setting.*/
+            /*The first two hours is to generalize the research-paper equation. But then add 3 more hours to the Loop absorption time to better mimic the effect of the duration of a pump square-wave (because the insulin will still have significant effect for about three hours after the square-wave ends). This does not need to be exact because individuals will tune it to their personal response using the FPU-Ratio setting.*/
             
             var squareWaveDuration = 2.0 + FPU + 3.0
      
