@@ -75,19 +75,31 @@ public final class CarbEntryEditViewController: UITableViewController {
     
     public var updatedCarbEntry: NewCarbEntry? {
         if  let quantity = quantity,
-            let absorptionTime = absorptionTime ?? defaultAbsorptionTimes?.medium
+            var absorptionTime = absorptionTime ?? defaultAbsorptionTimes?.medium
         {
             if let o = originalCarbEntry, o.quantity == quantity && o.startDate == date && o.foodType == foodType && o.absorptionTime == absorptionTime {
                 return nil  // No changes were made
             }
             
-            return NewCarbEntry(
-                quantity: quantity,
-                startDate: date,
-                foodType: foodType,
-                absorptionTime: absorptionTime,
-                externalID: originalCarbEntry?.externalID
-            )
+            if ((proteinQuantity! > 0.0) || (fatQuantity! > 0.0)) { // RSS - If fat and protein were entered, then carbs are always fast.
+                return NewCarbEntry(
+                    quantity: quantity,
+                    startDate: date,
+                    foodType: foodType,
+                    absorptionTime: 7200,
+                    externalID: originalCarbEntry?.externalID
+                )
+            } else {
+                return NewCarbEntry(
+                    quantity: quantity,
+                    startDate: date,
+                    foodType: foodType,
+                    absorptionTime: absorptionTime,
+                    externalID: originalCarbEntry?.externalID
+                )
+            }
+            
+        
         } else {
             return nil
         }
@@ -115,25 +127,31 @@ public final class CarbEntryEditViewController: UITableViewController {
             // This is based on medical paper data that extra insulin is
             // most important for high-carb meals.
      
+            /*
             if carbQuantity! >= 40 {
                 lowCarbMultiplier = 1.0
             } else {
                 lowCarbMultiplier = (carbQuantity! / 80.0) + 0.5
             }
+            */ // This is experimental so comment out for now pending more discussion.
+            lowCarbMultiplier = 1.0
+            
      
             let FPU = Double(proteinCalories + fatCalories) / Double(FPCaloriesRatio)
      
             let carbEquivilant = FPU * 10 * lowCarbMultiplier
      
-            /*The first two hours is to generalize the research-paper equation. But then add 3 more hours to the Loop absorption time to better mimic the effect of the duration of a pump square-wave (because the insulin will still have significant effect for about three hours after the square-wave ends). This does not need to be exact because individuals will tune it to their personal response using the FPU-Ratio setting.*/
+                    /*The first two hours is to generalize the research-paper equation. But then add 3 more hours to the Loop absorption time to better mimic the effect of the duration of a pump square-wave (because the insulin will still have significant effect for about three hours after the square-wave ends). This does not need to be exact because individuals will tune it to their personal response using the FPU-Ratio setting. Finally, multiply by 0.6667 as the inverse of the 1.5x scaler that Loop applies to inputted durations. */
             
-            var squareWaveDuration = 2.0 + FPU + 3.0
+            var squareWaveDuration = (2.0 + FPU + 3.0) * 0.6667
      
-            if squareWaveDuration > 20 { // Set some reasonable max.
-                squareWaveDuration = 20
+            if squareWaveDuration > 16 { // Set some reasonable max.
+                squareWaveDuration = 16
             }
-            if squareWaveDuration < 7 { // Ewa told me never less than 4 hours for manual pump.
-                squareWaveDuration = 7  // But since this is carb-absorption, have to add 3.
+            if squareWaveDuration < 4 { // Ewa told me never less than 4 hours for manual pump.
+                squareWaveDuration = 4  // But since this is carb-absorption, have to add ~3. But then
+                                        // Multiply by 0.667 to invert the Loop 1.5x factor. About 4.5,
+                                        // but round back down to 4 (and Loop will make that 6).
             }
      
             if carbEquivilant >= 1 {
@@ -160,7 +178,7 @@ public final class CarbEntryEditViewController: UITableViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
         tableView.register(DateAndDurationTableViewCell.nib(), forCellReuseIdentifier: DateAndDurationTableViewCell.className)
 
@@ -298,7 +316,7 @@ public final class CarbEntryEditViewController: UITableViewController {
     }
 
     public override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return LocalizedString("Choose a longer absorption time for larger meals, or those containing fats and proteins. This is only guidance to the algorithm and need not be exact.", comment: "Carb entry section footer text explaining absorption time")
+        return LocalizedString("Optional Fat and protein entry will result in additional dosing over an extended duration for fat and protein calories, and will override manual entry of duration of absorption.", comment: "Carb entry section footer text explaining absorption time")
     }
 
     // MARK: - UITableViewDelegate
