@@ -1757,6 +1757,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43BA716E201E49220058961E /* DecimalTextFieldTableViewCell.swift in Sources */,
 				43FB60E720DCBC55002B996B /* RadioSelectionTableViewController.swift in Sources */,
 				43BA7182201EE7090058961E /* TextFieldTableViewCell.swift in Sources */,
 				43F5034D210599CC009FA89A /* AuthenticationViewController.swift in Sources */,
@@ -1802,7 +1803,6 @@
 				4369F092208B0DFF000E3E45 /* DateAndDurationTableViewCell.swift in Sources */,
 				43BA7189201EE8980058961E /* UITableViewCell.swift in Sources */,
 				43BA7181201EE7090058961E /* RepeatingScheduleValueTableViewCell.swift in Sources */,
-				43BA716E201E49220058961E /* DecimalTextFieldTableViewCell.swift in Sources */,
 				895FE08722011F0C00FCF18A /* EmojiInputCell.swift in Sources */,
 				43A8EC3C210CEEA500A81379 /* CGMManagerUI.swift in Sources */,
 				43BA718B201EE93C0058961E /* TimeZone.swift in Sources */,
@@ -2001,7 +2001,6 @@
 				1F5DAB712118F3C300048054 /* nl */,
 				1F5DAB7D2118F3FC00048054 /* nb */,
 				1F50C327212B20D400C18FAB /* pl */,
-				7DA17889212F2C8B00590D24 /* ja */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -2018,7 +2017,6 @@
 				1F5DAB722118F3C300048054 /* nl */,
 				1F5DAB7E2118F3FC00048054 /* nb */,
 				1F50C328212B20D400C18FAB /* pl */,
-				7DA1788A212F2C8B00590D24 /* ja */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -2035,7 +2033,6 @@
 				1F5DAB742118F3C300048054 /* nl */,
 				1F5DAB802118F3FC00048054 /* nb */,
 				1F50C32A212B20D400C18FAB /* pl */,
-				7DA1788C212F2C8B00590D24 /* ja */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -2054,7 +2051,6 @@
 				1F5DAB7A2118F3FB00048054 /* nb */,
 				1FE58794211D0967004F24ED /* Base */,
 				1F50C324212B20D300C18FAB /* pl */,
-				7DA17886212F2C8B00590D24 /* ja */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -2072,7 +2068,6 @@
 				1F5DAB6A2118F3C200048054 /* nl */,
 				1F5DAB762118F3FB00048054 /* nb */,
 				1F50C320212B20D300C18FAB /* pl */,
-				7DA17882212F2C8B00590D24 /* ja */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -2090,7 +2085,6 @@
 				1F5DAB692118F3C200048054 /* nl */,
 				1F5DAB752118F3FB00048054 /* nb */,
 				1F50C31F212B20D300C18FAB /* pl */,
-				7DA17881212F2C8B00590D24 /* ja */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -2108,7 +2102,6 @@
 				1F5DAB6B2118F3C200048054 /* nl */,
 				1F5DAB772118F3FB00048054 /* nb */,
 				1F50C321212B20D300C18FAB /* pl */,
-				7DA17883212F2C8B00590D24 /* ja */,
 			);
 			name = CarbKit.storyboard;
 			sourceTree = "<group>";
@@ -2126,7 +2119,6 @@
 				1F5DAB6C2118F3C200048054 /* nl */,
 				1F5DAB782118F3FB00048054 /* nb */,
 				1F50C322212B20D300C18FAB /* pl */,
-				7DA17884212F2C8B00590D24 /* ja */,
 			);
 			name = InsulinKit.storyboard;
 			sourceTree = "<group>";
@@ -2144,7 +2136,6 @@
 				1F5DAB702118F3C200048054 /* nl */,
 				1F5DAB7C2118F3FC00048054 /* nb */,
 				1F50C326212B20D400C18FAB /* pl */,
-				7DA17888212F2C8B00590D24 /* ja */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -2161,7 +2152,6 @@
 				1F5DAB6F2118F3C200048054 /* nl */,
 				1F5DAB7B2118F3FB00048054 /* nb */,
 				1F50C325212B20D400C18FAB /* pl */,
-				7DA17887212F2C8B00590D24 /* ja */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -2178,8 +2168,6 @@
 				1F5DAB6D2118F3C200048054 /* nl */,
 				1F5DAB792118F3FB00048054 /* nb */,
 				1F50C323212B20D300C18FAB /* pl */,
-				7DA17885212F2C8B00590D24 /* ja */,
-				7DA1788D212F2F5B00590D24 /* Base */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -2197,7 +2185,6 @@
 				1F5DAB7F2118F3FC00048054 /* nb */,
 				1FE58790211CFBB7004F24ED /* Base */,
 				1F50C329212B20D400C18FAB /* pl */,
-				7DA1788B212F2C8B00590D24 /* ja */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
