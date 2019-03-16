@@ -127,14 +127,14 @@ public final class CarbEntryEditViewController: UITableViewController {
             // This is based on medical paper data that extra insulin is
             // most important for high-carb meals.
      
-            /*
+            
             if carbQuantity! >= 40 {
                 lowCarbMultiplier = 1.0
             } else {
                 lowCarbMultiplier = (carbQuantity! / 80.0) + 0.5
             }
-            */ // This is experimental so comment out for now pending more discussion.
-            lowCarbMultiplier = 1.0
+            // This is experimental so comment out for now pending more discussion.
+            //lowCarbMultiplier = 1.0
             
      
             let FPU = Double(proteinCalories + fatCalories) / Double(FPCaloriesRatio)
