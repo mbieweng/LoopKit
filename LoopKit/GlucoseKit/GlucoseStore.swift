@@ -195,7 +195,7 @@ extension GlucoseStore {
         cacheStore.managedObjectContext.performAndWait {
             glucose = values.compactMap {
                 guard self.cacheStore.managedObjectContext.cachedGlucoseObjectsWithSyncIdentifier($0.syncIdentifier, fetchLimit: 1).count == 0 else {
-                    log.default("Skipping adding dose due to existing cached syncIdentifier: %{public}@", $0.syncIdentifier)
+                    log.default("Skipping adding glucose value due to existing cached syncIdentifier: %{public}@", $0.syncIdentifier)
                     return nil
                 }
 
@@ -218,6 +218,20 @@ extension GlucoseStore {
                     assertionFailure()
                 }
             }
+        }
+    }
+
+
+    /// Deletes glucose samples from both the CoreData cache and from HealthKit.
+    ///
+    /// - Parameters:
+    ///   - cachePredicate: The predicate to use in matching CoreData glucose objects, or `nil` to match all.
+    ///   - healthKitPredicate: The predicate to use in matching HealthKit glucose objects.
+    ///   - completion: The completion handler for the result of the HealthKit object deletion.
+    public func purgeGlucoseSamples(matchingCachePredicate cachePredicate: NSPredicate?, healthKitPredicate: NSPredicate, completion: @escaping (_ success: Bool, _ count: Int, _ error: Error?) -> Void) {
+        dataAccessQueue.async {
+            self.purgeCachedGlucoseObjects(matching: cachePredicate)
+            self.healthStore.deleteObjects(of: self.glucoseType, predicate: healthKitPredicate, withCompletion: completion)
         }
     }
 
@@ -422,7 +436,7 @@ extension GlucoseStore {
         return Date(timeIntervalSinceNow: -cacheLength)
     }
 
-    private func purgeCachedGlucoseObjects(matching predicate: NSPredicate) {
+    private func purgeCachedGlucoseObjects(matching predicate: NSPredicate?) {
         dispatchPrecondition(condition: .onQueue(dataAccessQueue))
 
         cacheStore.managedObjectContext.performAndWait {

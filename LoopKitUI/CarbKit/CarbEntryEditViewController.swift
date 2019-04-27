@@ -110,6 +110,41 @@ public final class CarbEntryEditViewController: UITableViewController {
             let absorptionTime = absorptionTime ?? defaultAbsorptionTimes?.medium
         {
             if let o = originalCarbEntry, o.quantity == quantity && o.startDate == date && o.foodType == foodType && o.absorptionTime == absorptionTime {
+                // if ((proteinQuantity == 0) && (fatQuantity == 0)) {
+                //     return nil  // No changes were made
+                // }
+                return nil  // No changes were made
+            }
+            
+            if ((proteinQuantity! > 0.0) || (fatQuantity! > 0.0)) { // RSS - If fat and protein were entered, then carbs are always fast.
+                return NewCarbEntry(
+                    quantity: quantity,
+                    startDate: date,
+                    foodType: foodType,
+                    absorptionTime: 7200,
+                    externalID: originalCarbEntry?.externalID
+                )
+            } else {
+                return NewCarbEntry(
+                    quantity: quantity,
+                    startDate: date,
+                    foodType: foodType,
+                    absorptionTime: absorptionTime,
+                    externalID: originalCarbEntry?.externalID
+                )
+            }
+            
+        
+        } else {
+            return nil
+        }
+    }
+    
+     public var updatedFPCarbEntry: NewCarbEntry? {
+        if  let quantity = quantity,
+            let absorptionTime = absorptionTime ?? defaultAbsorptionTimes?.medium
+        {
+            if let o = originalCarbEntry, o.quantity == quantity && o.startDate == date && o.foodType == foodType && o.absorptionTime == absorptionTime {
                 if ((proteinQuantity == 0) && (fatQuantity == 0)) {
                     return nil  // No changes were made
                 }
@@ -434,7 +469,7 @@ extension CarbEntryEditViewController: TextFieldTableViewCellDelegate {
 
 
 extension CarbEntryEditViewController: DatePickerTableViewCellDelegate {
-    func datePickerTableViewCellDidUpdateDate(_ cell: DatePickerTableViewCell) {
+    public func datePickerTableViewCellDidUpdateDate(_ cell: DatePickerTableViewCell) {
         guard let row = tableView.indexPath(for: cell)?.row else { return }
 
         switch Row(rawValue: row) {

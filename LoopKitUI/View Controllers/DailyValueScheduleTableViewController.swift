@@ -52,7 +52,7 @@ open class DailyValueScheduleTableViewController: UITableViewController, DatePic
         tableView.estimatedRowHeight = 44
 
         if !isReadOnly {
-            navigationItem.rightBarButtonItems = [insertButtonItem(), editButtonItem]
+            navigationItem.rightBarButtonItems = [insertButtonItem, editButtonItem]
         }
 
         tableView.keyboardDismissMode = .onDrag
@@ -104,9 +104,9 @@ open class DailyValueScheduleTableViewController: UITableViewController, DatePic
 
     public weak var delegate: DailyValueScheduleTableViewControllerDelegate?
 
-    public func insertButtonItem() -> UIBarButtonItem {
+    public private(set) lazy var insertButtonItem: UIBarButtonItem = {
         return UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addScheduleItem(_:)))
-    }
+    }()
 
     // MARK: - State
 
@@ -140,7 +140,7 @@ open class DailyValueScheduleTableViewController: UITableViewController, DatePic
             }
 
             if isViewLoaded {
-                navigationItem.setRightBarButtonItems(isReadOnly ? [] : [insertButtonItem(), editButtonItem], animated: true)
+                navigationItem.setRightBarButtonItems(isReadOnly ? [] : [insertButtonItem, editButtonItem], animated: true)
             }
         }
     }
@@ -256,7 +256,7 @@ open class DailyValueScheduleTableViewController: UITableViewController, DatePic
 
     // MARK: - DatePickerTableViewCellDelegate
 
-    func datePickerTableViewCellDidUpdateDate(_ cell: DatePickerTableViewCell) {
+    public func datePickerTableViewCellDidUpdateDate(_ cell: DatePickerTableViewCell) {
 
         // Updates the TableView state. Subclasses should update their data model
         if let indexPath = tableView.indexPath(for: cell) {
