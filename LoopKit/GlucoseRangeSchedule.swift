@@ -269,7 +269,7 @@ extension GlucoseRangeSchedule.Override: Equatable {
     }
 }
 
-
+/*
 extension GlucoseRangeSchedule: Equatable {
     public static func ==(lhs: GlucoseRangeSchedule, rhs: GlucoseRangeSchedule) -> Bool {
         return lhs.rangeSchedule == rhs.rangeSchedule &&
@@ -277,6 +277,7 @@ extension GlucoseRangeSchedule: Equatable {
             lhs.override == rhs.override
     }
 }
+*/
 
 
 fileprivate extension DoubleRange {

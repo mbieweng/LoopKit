@@ -383,11 +383,13 @@ extension TemporaryScheduleOverride.Duration: RawRepresentable {
     }
 }
 
+
 private extension GlucoseRangeSchedule {
     init(rangeSchedule: DailyQuantitySchedule<DoubleRange>) {
         self.rangeSchedule = rangeSchedule
     }
 }
+    
 
 private extension DailyQuantitySchedule {
     init(unit: HKUnit, valueSchedule: DailyValueSchedule<T>) {
