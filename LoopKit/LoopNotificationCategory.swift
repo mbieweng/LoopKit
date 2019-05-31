@@ -25,4 +25,6 @@ public enum LoopNotificationCategory: String {
     case bolusRecommend
     case remoteTemp
     
+    case remoteTempSet
+    case remoteTempCancel
 }
