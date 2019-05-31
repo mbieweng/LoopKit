@@ -208,10 +208,8 @@
 		43BA7162201E490D0058961E /* ErrorBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8FEEF1C7294E90073BE78 /* ErrorBackgroundView.swift */; };
 		43BA7163201E490D0058961E /* InsulinDeliveryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4302F4DC1D4DCED000F0FCAF /* InsulinDeliveryTableViewController.swift */; };
 		43BA7164201E49130058961E /* InsulinKit.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43D8FEED1C7294E90073BE78 /* InsulinKit.storyboard */; };
-		43BA7165201E49180058961E /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43460F812002E1360030C0E3 /* UIAlertController.swift */; };
-		43BA7166201E49220058961E /* CarbAbsorptionInputCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F137281EDF9B310048468C /* CarbAbsorptionInputCell.swift */; };
-		43BA7167201E49220058961E /* CarbAbsorptionInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432711351EDE7C8700171F6A /* CarbAbsorptionInputController.swift */; };
-		43BA7168201E49220058961E /* CarbAbsorptionInputHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F1372A1EDF9B500048468C /* CarbAbsorptionInputHeaderView.swift */; };
+		43BA7166201E49220058961E /* (null) in Sources */ = {isa = PBXBuildFile; };
+		43BA7167201E49220058961E /* (null) in Sources */ = {isa = PBXBuildFile; };
 		43BA7169201E49220058961E /* CarbEntryEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8FE561C7291D80073BE78 /* CarbEntryEditViewController.swift */; };
 		43BA716A201E49220058961E /* CarbEntryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D8FE571C7291D80073BE78 /* CarbEntryTableViewController.swift */; };
 		43BA716B201E49220058961E /* CarbEntryValidationNavigationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FD1A6AF1E4A76CC0042EF39 /* CarbEntryValidationNavigationDelegate.swift */; };
@@ -309,7 +307,6 @@
 		7D68A9AE1FE0A3D000522C49 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7D68A9B01FE0A3D000522C49 /* Localizable.strings */; };
 		7D68A9B81FE0A3D100522C49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7D68A9BA1FE0A3D100522C49 /* InfoPlist.strings */; };
 		7D68A9C21FE0A3D200522C49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7D68A9C41FE0A3D200522C49 /* InfoPlist.strings */; };
-		891444E2221A4E01007E96CB /* CombinedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891444E1221A4E01007E96CB /* CombinedTableViewCell.swift */; };
 		8907E35921A9D0EC00335852 /* GlucoseEntryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8907E35821A9D0EC00335852 /* GlucoseEntryTableViewController.swift */; };
 		890E435A22728B41003284BA /* LoopNotificationCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1814B83225B9ED5008D2D8E /* LoopNotificationCategory.swift */; };
 		891A3FC72247268F00378B27 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891A3FC62247268F00378B27 /* Math.swift */; };
@@ -374,23 +371,6 @@
 		8974AFC022120D7A0043F01B /* TemporaryScheduleOverrideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8974AFBF22120D7A0043F01B /* TemporaryScheduleOverrideTests.swift */; };
 		8974B0682215FE460043F01B /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8974B0672215FE460043F01B /* Collection.swift */; };
 		8974B0692215FE460043F01B /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8974B0672215FE460043F01B /* Collection.swift */; };
-		8907E35921A9D0EC00335852 /* GlucoseEntryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8907E35821A9D0EC00335852 /* GlucoseEntryTableViewController.swift */; };
-		892A5D28222EF567008961AB /* Comparable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C145BF992219F10400A977CB /* Comparable.swift */; };
-		892A5D2E222EF69A008961AB /* MockHUDProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892A5D2D222EF69A008961AB /* MockHUDProvider.swift */; };
-		892A5D3D222F03CB008961AB /* LoopTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 892A5D34222F03CB008961AB /* LoopTestingKit.framework */; };
-		892A5D44222F03CB008961AB /* LoopTestingKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892A5D43222F03CB008961AB /* LoopTestingKitTests.swift */; };
-		892A5D46222F03CB008961AB /* LoopTestingKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 892A5D36222F03CB008961AB /* LoopTestingKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		892A5D49222F03CC008961AB /* LoopTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 892A5D34222F03CB008961AB /* LoopTestingKit.framework */; };
-		892A5D4A222F03CC008961AB /* LoopTestingKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 892A5D34222F03CB008961AB /* LoopTestingKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		892A5D52222F03DB008961AB /* TestingDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892A5D51222F03DB008961AB /* TestingDeviceManager.swift */; };
-		892A5D54222F03F9008961AB /* TestingPumpManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892A5D53222F03F9008961AB /* TestingPumpManager.swift */; };
-		892A5D56222F0414008961AB /* TestingCGMManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892A5D55222F0414008961AB /* TestingCGMManager.swift */; };
-		892A5D57222F04E2008961AB /* LoopTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 892A5D34222F03CB008961AB /* LoopTestingKit.framework */; };
-		892A5D5C222F1210008961AB /* LoopKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D8FDCB1C728FDF0073BE78 /* LoopKit.framework */; };
-		892A5D61222F6AF4008961AB /* BasalScheduleTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892A5D60222F6AF3008961AB /* BasalScheduleTableViewController.swift */; };
-		892A5D64222F6B13008961AB /* BasalScheduleEntryTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 892A5D62222F6B13008961AB /* BasalScheduleEntryTableViewCell.xib */; };
-		892A5D65222F6B13008961AB /* BasalScheduleEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892A5D63222F6B13008961AB /* BasalScheduleEntryTableViewCell.swift */; };
-		895695F621AA413B00828067 /* DateAndDurationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895695F521AA413B00828067 /* DateAndDurationTableViewController.swift */; };
 		898E6E5D2241783C0019E459 /* BasalScheduleEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 892A5D63222F6B13008961AB /* BasalScheduleEntryTableViewCell.swift */; };
 		898E6E67224179310019E459 /* BaseHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898E6E64224179300019E459 /* BaseHUDView.swift */; };
 		898E6E68224179310019E459 /* BatteryLevelHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 898E6E65224179300019E459 /* BatteryLevelHUDView.xib */; };
@@ -408,9 +388,9 @@
 		89AC7933224C781200B8E9BA /* UnfairLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89AC792F224C781200B8E9BA /* UnfairLock.swift */; };
 		89AC7935224C783500B8E9BA /* MockDoseProgressEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89AC7934224C783500B8E9BA /* MockDoseProgressEstimator.swift */; };
 		89AC7936224D9CF400B8E9BA /* BasalScheduleEntryTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 892A5D62222F6B13008961AB /* BasalScheduleEntryTableViewCell.xib */; };
+		89AE2245228D0B5C00BDFD85 /* TimeZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4303C4901E2D664200ADEDC8 /* TimeZone.swift */; };
 		89D2047B21CC7BD8001238CC /* MockKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89D2047221CC7BD7001238CC /* MockKit.framework */; };
 		89D2048021CC7BD8001238CC /* MockKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D2047F21CC7BD8001238CC /* MockKitTests.swift */; };
-		89AE2245228D0B5C00BDFD85 /* TimeZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4303C4901E2D664200ADEDC8 /* TimeZone.swift */; };
 		89D2048221CC7BD8001238CC /* MockKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D2047421CC7BD7001238CC /* MockKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		89D2048921CC7BF7001238CC /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4301582C1C7ECD7A00B64B63 /* HealthKit.framework */; };
 		89D2049F21CC7C13001238CC /* MockKitUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 89D2049121CC7C13001238CC /* MockKitUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -442,17 +422,8 @@
 		89D204CC21CC8236001238CC /* LocalizedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5DAB1C2118C95700048054 /* LocalizedString.swift */; };
 		89D204D221CC837A001238CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89D204D121CC837A001238CC /* Assets.xcassets */; };
 		C1F8B1E2223C3CC000DD66CF /* TimeZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4303C4901E2D664200ADEDC8 /* TimeZone.swift */; };
-		C1F8B1E4223C570F00DD66CF /* DoseProgressReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F8B1E3223C570F00DD66CF /* DoseProgressReporter.swift */; };
-		C1F8B1E8223E6D4900DD66CF /* MockDoseProgressEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F8B1E7223E6D4900DD66CF /* MockDoseProgressEstimator.swift */; };
-		C1FB427721754EBB00FAB378 /* ReservoirVolumeHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C1FB427621754EBB00FAB378 /* ReservoirVolumeHUDView.xib */; };
-		C1FB427921754FC900FAB378 /* ReservoirVolumeHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB427821754FC800FAB378 /* ReservoirVolumeHUDView.swift */; };
-		C1FB427B2175503B00FAB378 /* LevelHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB427A2175503A00FAB378 /* LevelHUDView.swift */; };
-		C1FB427D217551F200FAB378 /* HUDAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C1FB427C217551F200FAB378 /* HUDAssets.xcassets */; };
-		C1FB427F2175570C00FAB378 /* BatteryLevelHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C1FB427E2175570C00FAB378 /* BatteryLevelHUDView.xib */; };
-		C1FB42812175572A00FAB378 /* BatteryLevelHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB42802175572A00FAB378 /* BatteryLevelHUDView.swift */; };
-		C1FB428321755A9B00FAB378 /* BaseHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB428221755A9A00FAB378 /* BaseHUDView.swift */; };
-		C1FB428521755B4600FAB378 /* LevelMaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB428421755B4600FAB378 /* LevelMaskView.swift */; };
-		C1FB428721755B8C00FAB378 /* StateColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB428621755B8B00FAB378 /* StateColorPalette.swift */; };
+		C1FB42812175572A00FAB378 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		C1FB428721755B8C00FAB378 /* (null) in Sources */ = {isa = PBXBuildFile; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -912,9 +883,9 @@
 		7D68AABE1FE31BE700522C49 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		7D68AAC01FE31BE800522C49 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		7D68AAC61FE31BE900522C49 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		891444E1221A4E01007E96CB /* CombinedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombinedTableViewCell.swift; sourceTree = "<group>"; };
 		8907E35821A9D0EC00335852 /* GlucoseEntryTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlucoseEntryTableViewController.swift; sourceTree = "<group>"; };
 		8907E35A21A9D1B200335852 /* SineCurveParametersTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SineCurveParametersTableViewController.swift; sourceTree = "<group>"; };
+		891444E1221A4E01007E96CB /* CombinedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombinedTableViewCell.swift; sourceTree = "<group>"; };
 		891A3FC62247268F00378B27 /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		891A3FCE2249738500378B27 /* TemporaryScheduleOverrideHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporaryScheduleOverrideHistory.swift; sourceTree = "<group>"; };
 		891A3FD02249948A00378B27 /* TemporaryScheduleOverrideHistoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporaryScheduleOverrideHistoryTests.swift; sourceTree = "<group>"; };
@@ -979,23 +950,6 @@
 		895FE0962201250700FCF18A /* SwitchTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SwitchTableViewCell.xib; sourceTree = "<group>"; };
 		8974AFBF22120D7A0043F01B /* TemporaryScheduleOverrideTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemporaryScheduleOverrideTests.swift; sourceTree = "<group>"; };
 		8974B0672215FE460043F01B /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
-		8907E35821A9D0EC00335852 /* GlucoseEntryTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlucoseEntryTableViewController.swift; sourceTree = "<group>"; };
-		8907E35A21A9D1B200335852 /* SineCurveParametersTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SineCurveParametersTableViewController.swift; sourceTree = "<group>"; };
-		892A5D2D222EF69A008961AB /* MockHUDProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockHUDProvider.swift; sourceTree = "<group>"; };
-		892A5D34222F03CB008961AB /* LoopTestingKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LoopTestingKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		892A5D36222F03CB008961AB /* LoopTestingKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoopTestingKit.h; sourceTree = "<group>"; };
-		892A5D37222F03CB008961AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		892A5D3C222F03CB008961AB /* LoopTestingKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LoopTestingKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		892A5D43222F03CB008961AB /* LoopTestingKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopTestingKitTests.swift; sourceTree = "<group>"; };
-		892A5D45222F03CB008961AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		892A5D51222F03DB008961AB /* TestingDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingDeviceManager.swift; sourceTree = "<group>"; };
-		892A5D53222F03F9008961AB /* TestingPumpManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingPumpManager.swift; sourceTree = "<group>"; };
-		892A5D55222F0414008961AB /* TestingCGMManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingCGMManager.swift; sourceTree = "<group>"; };
-		892A5D60222F6AF3008961AB /* BasalScheduleTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasalScheduleTableViewController.swift; sourceTree = "<group>"; };
-		892A5D62222F6B13008961AB /* BasalScheduleEntryTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BasalScheduleEntryTableViewCell.xib; sourceTree = "<group>"; };
-		892A5D63222F6B13008961AB /* BasalScheduleEntryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasalScheduleEntryTableViewCell.swift; sourceTree = "<group>"; };
-		892F481A21AB2964004D313D /* RandomOutlierTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomOutlierTableViewController.swift; sourceTree = "<group>"; };
-		895695F521AA413B00828067 /* DateAndDurationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateAndDurationTableViewController.swift; sourceTree = "<group>"; };
 		898E6E64224179300019E459 /* BaseHUDView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseHUDView.swift; sourceTree = "<group>"; };
 		898E6E65224179300019E459 /* BatteryLevelHUDView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BatteryLevelHUDView.xib; sourceTree = "<group>"; };
 		898E6E66224179300019E459 /* BatteryLevelHUDView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatteryLevelHUDView.swift; sourceTree = "<group>"; };
@@ -1284,10 +1238,6 @@
 				895FE07422011F0B00FCF18A /* OverridePresetCollectionViewCell.swift */,
 				895FE07622011F0B00FCF18A /* OverrideSelectionFooterView.swift */,
 				895FE07C22011F0C00FCF18A /* OverrideSelectionHeaderView.swift */,
-				C1FB427C217551F200FAB378 /* HUDAssets.xcassets */,
-				C1FB427A2175503A00FAB378 /* LevelHUDView.swift */,
-				C1FB428421755B4600FAB378 /* LevelMaskView.swift */,
-				C11166AF2180FA5C000EEAAB /* LoadingTableViewCell.swift */,
 				4369F08E208859E6000E3E45 /* PaddedTextField.swift */,
 				43D8FE0A1C7290530073BE78 /* RepeatingScheduleValueTableViewCell.swift */,
 				43D8FE0B1C7290530073BE78 /* RepeatingScheduleValueTableViewCell.xib */,
@@ -1304,8 +1254,6 @@
 				434FF1EF1CF29451000DB779 /* TextFieldTableViewCell.xib */,
 				43F5034E210599DF009FA89A /* ValidatingIndicatorView.swift */,
 				891444E1221A4E01007E96CB /* CombinedTableViewCell.swift */,
-				C184FECA219F2E0100CD2722 /* SuspendResumeTableViewCell.swift */,
-				89E72DDF21BDDD6C00F0985C /* SwitchTableViewCell.xib */,
 				89E72DDF21BDDD6C00F0985C /* SwitchTableViewCell.xib */,
 				892155122245C516009112BC /* SegmentedGaugeBarView.swift */,
 				892155142245C57E009112BC /* SegmentedGaugeBarLayer.swift */,
@@ -2049,8 +1997,6 @@
 		43D8FDC21C728FDF0073BE78 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 1010;
 				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "LoopKit Authors";
@@ -2121,6 +2067,7 @@
 				nl,
 				nb,
 				pl,
+				ru,
 			);
 			mainGroup = 43D8FDC11C728FDF0073BE78;
 			productRefGroup = 43D8FDCC1C728FDF0073BE78 /* Products */;
@@ -2380,15 +2327,12 @@
 				8907E35921A9D0EC00335852 /* GlucoseEntryTableViewController.swift in Sources */,
 				43F5034D210599CC009FA89A /* AuthenticationViewController.swift in Sources */,
 				895FE08922011F0C00FCF18A /* OverrideSelectionHeaderView.swift in Sources */,
-				C1E31F1222008AA300E88C00 /* SettingsNavigationViewController.swift in Sources */,
 				898E6E67224179310019E459 /* BaseHUDView.swift in Sources */,
 				43F5034F210599DF009FA89A /* ValidatingIndicatorView.swift in Sources */,
 				43BA718C201EEE5A0058961E /* NSData.swift in Sources */,
 				43F5035A21059AF7009FA89A /* AuthenticationTableViewCell.swift in Sources */,
 				43BA7163201E490D0058961E /* InsulinDeliveryTableViewController.swift in Sources */,
-				43BA7186201EE7090058961E /* UIViewController.swift in Sources */,
 				895FE09222011F4800FCF18A /* OverridePresetTableViewController.swift in Sources */,
-				C1EE3C20221F4E1A0081AA37 /* UIColor.swift in Sources */,
 				895FE09222011F4800FCF18A /* OverridePresetTableViewController.swift in Sources */,
 				43BA718A201EE8CF0058961E /* NSTimeInterval.swift in Sources */,
 				892155152245C57E009112BC /* SegmentedGaugeBarLayer.swift in Sources */,
@@ -2400,7 +2344,6 @@
 				43BA7170201E49220058961E /* FoodTypeShortcutCell.swift in Sources */,
 				432CF86520D7692E0066B889 /* DeliveryLimitSettingsTableViewController.swift in Sources */,
 				895FE08322011F0C00FCF18A /* OverrideSelectionFooterView.swift in Sources */,
-				C145BF9C2219F1CC00A977CB /* Comparable.swift in Sources */,
 				4369F08F208859E6000E3E45 /* PaddedTextField.swift in Sources */,
 				892A5D9E2231E122008961AB /* StateColorPalette.swift in Sources */,
 				895FE08022011F0C00FCF18A /* EmojiDataSource.swift in Sources */,
@@ -2410,8 +2353,6 @@
 				1F5DAB212118C95700048054 /* LocalizedString.swift in Sources */,
 				43FB60E520DCBA02002B996B /* SetupTableViewController.swift in Sources */,
 				43BA7180201EE7090058961E /* SingleValueScheduleTableViewController.swift in Sources */,
-				895FE08522011F0C00FCF18A /* OverrideMultiplierTableViewCell.swift in Sources */,
-				43F5035D21059B56009FA89A /* UIColor.swift in Sources */,
 				898E6E5D2241783C0019E459 /* BasalScheduleEntryTableViewCell.swift in Sources */,
 				895FE09322011F4800FCF18A /* EmojiInputController.swift in Sources */,
 				43BA717E201EE7090058961E /* CommandResponseViewController.swift in Sources */,
@@ -2420,9 +2361,8 @@
 				43BA7187201EE7090058961E /* GlucoseRangeScheduleTableViewController.swift in Sources */,
 				4322B76B202F9E4B0002837D /* HKUnit+LoopKitUI.swift in Sources */,
 				43BA7183201EE7090058961E /* DailyQuantityScheduleTableViewController.swift in Sources */,
-				C1FB428721755B8C00FAB378 /* StateColorPalette.swift in Sources */,
-				C184FECB219F2E0100CD2722 /* SuspendResumeTableViewCell.swift in Sources */,
-				43BA7167201E49220058961E /* CarbAbsorptionInputController.swift in Sources */,
+				C1FB428721755B8C00FAB378 /* (null) in Sources */,
+				43BA7167201E49220058961E /* (null) in Sources */,
 				43F503632106C761009FA89A /* ServiceAuthenticationUI.swift in Sources */,
 				432CF86B20D76B9C0066B889 /* SetupIndicatorView.swift in Sources */,
 				898E6E722241EDC10019E459 /* DateAndDurationTableViewController.swift in Sources */,
@@ -2452,7 +2392,6 @@
 				895FE09022011F4800FCF18A /* OverrideSelectionViewController.swift in Sources */,
 				43F5035721059A8A009FA89A /* ServiceCredential.swift in Sources */,
 				43BA7169201E49220058961E /* CarbEntryEditViewController.swift in Sources */,
-				895FE08422011F0C00FCF18A /* OverrideMultiplierView.swift in Sources */,
 				892A5DA22231E137008961AB /* HUDProvider.swift in Sources */,
 				892A5DBC2231E20C008961AB /* Comparable.swift in Sources */,
 				898E6E6C224194060019E459 /* UIColor.swift in Sources */,
@@ -2460,11 +2399,9 @@
 				43BA7184201EE7090058961E /* TextFieldTableViewController.swift in Sources */,
 				895FE09122011F4800FCF18A /* AddEditOverrideTableViewController.swift in Sources */,
 				895FE06E22011E9A00FCF18A /* OverrideEmojiDataSource.swift in Sources */,
-				C1E31F142200E7D500E88C00 /* HUDProvider.swift in Sources */,
 				43BA717D201EE7090058961E /* GlucoseRangeTableViewCell.swift in Sources */,
-				43BA7166201E49220058961E /* CarbAbsorptionInputCell.swift in Sources */,
-				89CCD4FA21A911510068C3FB /* PercentageTextFieldTableViewController.swift in Sources */,
-				C1FB42812175572A00FAB378 /* BatteryLevelHUDView.swift in Sources */,
+				43BA7166201E49220058961E /* (null) in Sources */,
+				C1FB42812175572A00FAB378 /* (null) in Sources */,
 				43BA7184201EE7090058961E /* TextFieldTableViewController.swift in Sources */,
 				43BA716A201E49220058961E /* CarbEntryTableViewController.swift in Sources */,
 				43BA716B201E49220058961E /* CarbEntryValidationNavigationDelegate.swift in Sources */,
