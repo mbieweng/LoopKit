@@ -27,4 +27,6 @@ public enum LoopNotificationCategory: String {
     
     case remoteTempSet
     case remoteTempCancel
+    
+    case carbCorrectionRecommended
 }
