@@ -12,8 +12,8 @@ import LoopTestingKit
 
 
 public protocol MockPumpManagerStateObserver {
-    func mockPumpManager(_ manager: MockPumpManager, didUpdateState state: MockPumpManagerState)
-    func mockPumpManager(_ manager: MockPumpManager, didUpdateStatus status: PumpManagerStatus)
+    func mockPumpManager(_ manager: MockPumpManager, didUpdate state: MockPumpManagerState)
+    func mockPumpManager(_ manager: MockPumpManager, didUpdate status: PumpManagerStatus, oldStatus: PumpManagerStatus)
 }
 
 public struct MockPumpManagerState {
@@ -63,13 +63,13 @@ public final class MockPumpManager: TestingPumpManager {
         return MockPumpManager.pumpReservoirCapacity
     }
 
-
-    public func roundToSupportedBasalRate(unitsPerHour: Double) -> Double {
-        return supportedBasalRates.filter({$0 <= unitsPerHour}).max() ?? 0
-    }
-
-    public func roundToSupportedBolusVolume(units: Double) -> Double {
-        return supportedBolusVolumes.filter({$0 <= units}).max() ?? 0
+    public var reservoirFillFraction: Double {
+        get {
+            return state.reservoirUnitsRemaining / pumpReservoirCapacity
+        }
+        set {
+            state.reservoirUnitsRemaining = newValue * pumpReservoirCapacity
+        }
     }
 
     public var supportedBolusVolumes: [Double] {
@@ -94,29 +94,54 @@ public final class MockPumpManager: TestingPumpManager {
 
     public var status: PumpManagerStatus {
         didSet {
-            statusObservers.forEach { $0.pumpManager(self, didUpdate: status) }
-            stateObservers.forEach { $0.mockPumpManager(self, didUpdateStatus: status) }
-            pumpManagerDelegate?.pumpManager(self, didUpdate: status)
-            pumpManagerDelegate?.pumpManagerDidUpdateState(self)
+            let newValue = self.status
+            statusObservers.forEach { $0.pumpManager(self, didUpdate: newValue, oldStatus: oldValue) }
+            stateObservers.forEach { $0.mockPumpManager(self, didUpdate: newValue, oldStatus: oldValue) }
+            delegate.notify {
+                $0?.pumpManager(self, didUpdate: newValue, oldStatus: oldValue)
+                $0?.pumpManagerDidUpdateState(self)
+            }
         }
     }
 
     public var state: MockPumpManagerState {
         didSet {
-            stateObservers.forEach { $0.mockPumpManager(self, didUpdateState: state) }
-            if state.reservoirUnitsRemaining != oldValue.reservoirUnitsRemaining {
-                pumpManagerDelegate?.pumpManager(self, didReadReservoirValue: state.reservoirUnitsRemaining, at: Date()) { result in
-                    // nothing to do here
+            let reservoirChanged = state.reservoirUnitsRemaining != oldValue.reservoirUnitsRemaining
+
+            stateObservers.forEach { $0.mockPumpManager(self, didUpdate: self.state) }
+            delegate.notify { (delegate) in
+                if reservoirChanged {
+                    delegate?.pumpManager(self, didReadReservoirValue: self.state.reservoirUnitsRemaining, at: Date()) { result in
+                        // nothing to do here
+                    }
                 }
+                delegate?.pumpManagerDidUpdateState(self)
             }
-            pumpManagerDelegate?.pumpManagerDidUpdateState(self)
         }
     }
 
-    public var pumpManagerDelegate: PumpManagerDelegate?
+    public var pumpManagerDelegate: PumpManagerDelegate? {
+        get {
+            return delegate.delegate
+        }
+        set {
+            delegate.delegate = newValue
+        }
+    }
 
-    private var statusObservers = WeakSet<PumpManagerStatusObserver>()
-    private var stateObservers = WeakSet<MockPumpManagerStateObserver>()
+    public var delegateQueue: DispatchQueue! {
+        get {
+            return delegate.queue
+        }
+        set {
+            delegate.queue = newValue
+        }
+    }
+
+    private let delegate = WeakSynchronizedDelegate<PumpManagerDelegate>()
+
+    private var statusObservers = WeakSynchronizedSet<PumpManagerStatusObserver>()
+    private var stateObservers = WeakSynchronizedSet<MockPumpManagerStateObserver>()
 
     private var pendingPumpEvents: [NewPumpEvent] = []
 
@@ -154,22 +179,26 @@ public final class MockPumpManager: TestingPumpManager {
         return false
     }
 
-    public func addStatusObserver(_ observer: PumpManagerStatusObserver) {
-        statusObservers.insert(observer)
+    public func addStatusObserver(_ observer: PumpManagerStatusObserver, queue: DispatchQueue) {
+        statusObservers.insert(observer, queue: queue)
     }
 
-    public func addStateObserver(_ observer: MockPumpManagerStateObserver) {
-        stateObservers.insert(observer)
+    public func addStateObserver(_ observer: MockPumpManagerStateObserver, queue: DispatchQueue) {
+        stateObservers.insert(observer, queue: queue)
     }
 
     public func removeStatusObserver(_ observer: PumpManagerStatusObserver) {
-        statusObservers.remove(observer)
+        statusObservers.removeElement(observer)
     }
 
     public func assertCurrentPumpData() {
-        pumpManagerDelegate?.pumpManager(self, didReadPumpEvents: pendingPumpEvents) { [weak self] error in
-            guard let self = self else { return }
-            self.pumpManagerDelegate?.pumpManagerRecommendsLoop(self)
+        let pendingPumpEvents = self.pendingPumpEvents
+        delegate.notify { (delegate) in
+            delegate?.pumpManager(self, didReadPumpEvents: pendingPumpEvents) { error in
+                self.delegate.notify { (delegate) in
+                    delegate?.pumpManagerRecommendsLoop(self)
+                }
+            }
         }
 
         let totalInsulinUsage = pendingPumpEvents.reduce(into: 0 as Double) { total, event in
@@ -182,7 +211,7 @@ public final class MockPumpManager: TestingPumpManager {
             self.state.reservoirUnitsRemaining -= totalInsulinUsage
         }
 
-        pendingPumpEvents.removeAll()
+        self.pendingPumpEvents.removeAll()
     }
 
     public func enactTempBasal(unitsPerHour: Double, for duration: TimeInterval, completion: @escaping (PumpManagerResult<DoseEntry>) -> Void) {
@@ -226,11 +255,7 @@ public final class MockPumpManager: TestingPumpManager {
         }
     }
 
-    public func roundToDeliveryIncrement(units: Double) -> Double {
-        return round(units * MockPumpManager.pulsesPerUnit) / MockPumpManager.pulsesPerUnit
-    }
-
-    public func updateBLEHeartbeatPreference() {
+    public func setMustProvideBLEHeartbeat(_ mustProvideBLEHeartbeat: Bool) {
         // nothing to do here
     }
 
@@ -267,6 +292,11 @@ public final class MockPumpManager: TestingPumpManager {
             }
         }
     }
+
+    public func injectPumpEvents(_ pumpEvents: [NewPumpEvent]) {
+        pendingPumpEvents += pumpEvents
+        pendingPumpEvents.sort(by: { $0.date < $1.date })
+    }
 }
 
 extension MockPumpManager {
@@ -276,6 +306,8 @@ extension MockPumpManager {
         status: \(status)
         state: \(status)
         pendingPumpEvents: \(pendingPumpEvents)
+        stateObservers.count: \(stateObservers.cleanupDeallocatedElements().count)
+        statusObservers.count: \(statusObservers.cleanupDeallocatedElements().count)
         """
     }
 }
@@ -289,32 +321,28 @@ private extension NewPumpEvent {
             value: units,
             unit: .units
         )
-        return NewPumpEvent(date: date, dose: dose, isMutable: false, raw: newDataIdentifier(), title: "Bolus", type: .bolus)
+        return NewPumpEvent(date: date, dose: dose, isMutable: false, raw: .newPumpEventIdentifier(), title: "Bolus", type: .bolus)
     }
 
     static func tempBasal(at date: Date, for duration: TimeInterval, unitsPerHour: Double) -> NewPumpEvent {
         let dose = DoseEntry(
-            type: .basal,
+            type: .tempBasal,
             startDate: date,
             endDate: date.addingTimeInterval(duration),
             value: unitsPerHour,
             unit: .unitsPerHour
         )
-        return NewPumpEvent(date: date, dose: dose, isMutable: false, raw: newDataIdentifier(), title: "Temp Basal", type: .tempBasal)
+        return NewPumpEvent(date: date, dose: dose, isMutable: false, raw: .newPumpEventIdentifier(), title: "Temp Basal", type: .tempBasal)
     }
 
     static func suspend(at date: Date) -> NewPumpEvent {
         let dose = DoseEntry(suspendDate: date)
-        return NewPumpEvent(date: date, dose: dose, isMutable: false, raw: newDataIdentifier(), title: "Suspend", type: .suspend)
+        return NewPumpEvent(date: date, dose: dose, isMutable: false, raw: .newPumpEventIdentifier(), title: "Suspend", type: .suspend)
     }
 
     static func resume(at date: Date) -> NewPumpEvent {
         let dose = DoseEntry(resumeDate: date)
-        return NewPumpEvent(date: date, dose: dose, isMutable: false, raw: newDataIdentifier(), title: "Resume", type: .resume)
-    }
-
-    private static func newDataIdentifier() -> Data {
-        return UUID().uuidString.data(using: .utf8)!
+        return NewPumpEvent(date: date, dose: dose, isMutable: false, raw: .newPumpEventIdentifier(), title: "Resume", type: .resume)
     }
 }
 

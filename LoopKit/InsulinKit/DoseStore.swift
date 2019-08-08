@@ -128,7 +128,7 @@ public final class DoseStore {
     /// The basal profile, applying recent overrides relative to the current moment in time.
     public var basalProfileApplyingOverrideHistory: BasalRateSchedule? {
         if let basalProfile = basalProfile {
-            return overrideHistory?.resolvingRecentBasalSchedule(basalProfile)
+            return overrideHistory?.resolvingRecentBasalSchedule(basalProfile) ?? basalProfile
         } else {
             return nil
         }
@@ -430,6 +430,7 @@ extension DoseStore {
         }
 
         self.areReservoirValuesValid = false
+        self.lastStoredReservoirValue = nil
         return []
     }
 
@@ -908,6 +909,7 @@ extension DoseStore {
     ///   - result: The doses along with schedule basal
     private func getPumpEventDoseEntriesForSavingToHealthStore(lastBasalEndDate: Date, completion: @escaping (_ result: DoseStoreResult<[DoseEntry]>) -> Void) {
         self.persistenceController.managedObjectContext.perform {
+            // The try? here swallows errors. DoseStoreError.configurationError, and DoseStoreError.fetchError
             guard let doses = try? self.getNormalizedPumpEventDoseEntriesForSavingToHealthStore(basalStart: lastBasalEndDate, end: self.currentDate()),
                 doses.count > 0
             else {
@@ -1148,7 +1150,7 @@ extension DoseStore {
         }
     }
 
-    /// Retrieves the single insulin on-board value occuring just prior to the specified date
+    /// Retrieves the maximum insulin on-board value from the two timeline values nearest to the specified date
     ///
     /// This operation is performed asynchronously and the completion will be executed on an arbitrary background queue.
     ///
@@ -1157,16 +1159,21 @@ extension DoseStore {
     ///   - completion: A closure called once the value has been retrieved
     ///   - result: The insulin on-board value
     public func insulinOnBoard(at date: Date, completion: @escaping (_ result: DoseStoreResult<InsulinValue>) -> Void) {
-        getInsulinOnBoardValues(start: date.addingTimeInterval(TimeInterval(minutes: -5)), end: date) { (result) -> Void in
+        getInsulinOnBoardValues(start: date.addingTimeInterval(.minutes(-5)), end: date.addingTimeInterval(.minutes(5))) { (result) -> Void in
             switch result {
             case .failure(let error):
                 completion(.failure(error))
             case .success(let values):
-                guard let value = values.closestPriorToDate(date) else {
+                let closest = values.allElementsAdjacent(to: date)
+
+                // Return the larger of the two bounding values, for the scenario when a bolus
+                // was scheduled between the two values; we want to return the later, larger value
+                guard let maxValue = closest.max(by: { return $0.value < $1.value }) else {
                     completion(.failure(.fetchError(description: "No values found", recoverySuggestion: "Ensure insulin data exists for the specified date")))
                     return
                 }
-                completion(.success(value))
+
+                completion(.success(maxValue))
             }
         }
     }

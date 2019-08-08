@@ -23,6 +23,14 @@ public final class OverridePresetTableViewController: UITableViewController {
     public var presets: [TemporaryScheduleOverridePreset] {
         didSet {
             delegate?.overridePresetTableViewControllerDidUpdatePresets(self)
+            if presets.isEmpty {
+                if isViewLoaded, tableView.isEditing {
+                    endEditing()
+                }
+                editButton.isEnabled = false
+            } else {
+                editButton.isEnabled = true
+            }
         }
     }
 
@@ -48,6 +56,10 @@ public final class OverridePresetTableViewController: UITableViewController {
         title = NSLocalizedString("Override Presets", comment: "The title text for the override presets screen")
         navigationItem.rightBarButtonItems = [saveButton, editButton]
         tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: SettingsTableViewCell.className)
+
+        if presets.isEmpty {
+            editButton.isEnabled = false
+        }
     }
 
     @objc private func addNewPreset() {
@@ -61,11 +73,13 @@ public final class OverridePresetTableViewController: UITableViewController {
 
     @objc private func beginEditing() {
         tableView.setEditing(true, animated: true)
+        saveButton.isEnabled = false
         navigationItem.setRightBarButtonItems([saveButton, doneButton], animated: true)
     }
 
     @objc private func endEditing() {
         tableView.setEditing(false, animated: true)
+        saveButton.isEnabled = true
         navigationItem.setRightBarButtonItems([saveButton, editButton], animated: true)
     }
 

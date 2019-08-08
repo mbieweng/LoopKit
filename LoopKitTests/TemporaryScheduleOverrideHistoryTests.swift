@@ -46,6 +46,7 @@ final class TemporaryScheduleOverrideHistoryTests: XCTestCase {
     private func historyResolves(to expected: BasalRateSchedule, referenceDateOffset: TimeInterval = 0) -> Bool {
         let referenceDate = self.referenceDate + referenceDateOffset
         let actual = history.resolvingRecentBasalSchedule(basalRateSchedule, relativeTo: referenceDate)
+        print(actual)
         return actual.equals(expected, accuracy: 1e-6)
     }
 

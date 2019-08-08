@@ -50,6 +50,8 @@ extension DoubleRange: Equatable {
     }
 }
 
+extension DoubleRange: Hashable {}
+
 
 /// Defines a daily schedule of glucose ranges
 public struct GlucoseRangeSchedule: DailySchedule, Equatable {
@@ -77,8 +79,8 @@ public struct GlucoseRangeSchedule: DailySchedule, Equatable {
         return rangeSchedule.between(start: startDate, end: endDate)
     }
 
-    public func quantityBetween(start: Date, end: Date) -> [AbsoluteScheduleValue<Range<HKQuantity>>] {
-        var quantitySchedule = [AbsoluteScheduleValue<Range<HKQuantity>>]()
+    public func quantityBetween(start: Date, end: Date) -> [AbsoluteScheduleValue<ClosedRange<HKQuantity>>] {
+        var quantitySchedule = [AbsoluteScheduleValue<ClosedRange<HKQuantity>>]()
 
         for schedule in between(start: start, end: end) {
             quantitySchedule.append(AbsoluteScheduleValue(
@@ -97,7 +99,7 @@ public struct GlucoseRangeSchedule: DailySchedule, Equatable {
         return rangeSchedule.value(at: time)
     }
 
-    public func quantityRange(at time: Date) -> Range<HKQuantity> {
+    public func quantityRange(at time: Date) -> ClosedRange<HKQuantity> {
         return value(at: time).quantityRange(for: unit)
     }
 
@@ -123,11 +125,10 @@ public struct GlucoseRangeSchedule: DailySchedule, Equatable {
     }
 }
 
-
 fileprivate extension DoubleRange {
-    func quantityRange(for unit: HKUnit) -> Range<HKQuantity> {
+    func quantityRange(for unit: HKUnit) -> ClosedRange<HKQuantity> {
         let lowerBound = HKQuantity(unit: unit, doubleValue: minValue)
         let upperBound = HKQuantity(unit: unit, doubleValue: maxValue)
-        return lowerBound..<upperBound
+        return lowerBound...upperBound
     }
 }

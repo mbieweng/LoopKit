@@ -35,6 +35,8 @@ public class TextFieldTableViewCell: UITableViewCell, UITextFieldDelegate {
         }
     }
 
+    public var maximumTextLength: Int?
+
     override public func prepareForReuse() {
         super.prepareForReuse()
 
@@ -56,5 +58,19 @@ public class TextFieldTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     public func textFieldDidEndEditing(_ textField: UITextField) {
         delegate?.textFieldTableViewCellDidEndEditing(self)
+    }
+
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let maximumTextLength = maximumTextLength else {
+            return true
+        }
+        let text = textField.text ?? ""
+        let allText = (text as NSString).replacingCharacters(in: range, with: string)
+        if allText.count <= maximumTextLength {
+            return true
+        } else {
+            textField.text = String(allText.prefix(maximumTextLength))
+            return false
+        }
     }
 }
