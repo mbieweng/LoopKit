@@ -78,10 +78,8 @@ public final class TemporaryScheduleOverrideHistory {
     private func record(_ override: TemporaryScheduleOverride, at enableDate: Date) {
         recentEvents.removeAll(where: { $0.override.startDate >= override.startDate })
 
-        if  let lastEvent = recentEvents.last,
-            case let overrideEnd = min(override.startDate.nearestPrevious, enableDate),
-            lastEvent.actualEndDate > overrideEnd
-        {
+        if recentEvents.last?.override.hasFinished(relativeTo: enableDate) == false {
+            let overrideEnd = min(override.startDate.nearestPrevious, enableDate)
             recentEvents[recentEvents.endIndex - 1].end = .early(overrideEnd)
         }
 
