@@ -49,6 +49,8 @@ public final class CarbEntryEditViewController: UITableViewController {
 
                 absorptionTimeWasEdited = true
                 usesCustomFoodType = true
+
+                shouldBeginEditingQuantity = false
             }
         }
     }
@@ -72,7 +74,11 @@ public final class CarbEntryEditViewController: UITableViewController {
     fileprivate var absorptionTimeWasEdited = false
 
     fileprivate var usesCustomFoodType = false
-    
+
+    private var shouldBeginEditingQuantity = true
+
+    private var shouldBeginEditingFoodType = false
+
     public var updatedCarbEntry: NewCarbEntry? {
         if  let quantity = quantity,
             var absorptionTime = absorptionTime ?? defaultAbsorptionTimes?.medium
@@ -189,6 +195,15 @@ public final class CarbEntryEditViewController: UITableViewController {
         }
     }
 
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if shouldBeginEditingQuantity, let cell = tableView.cellForRow(at: IndexPath(row: Row.value.rawValue, section: 0)) as? DecimalTextFieldTableViewCell {
+            shouldBeginEditingQuantity = false
+            cell.textField.becomeFirstResponder()
+        }
+    }
+
     private var foodKeyboard: EmojiInputController!
 
     @IBOutlet weak var saveButtonItem: UIBarButtonItem!
@@ -224,13 +239,6 @@ public final class CarbEntryEditViewController: UITableViewController {
             }
             cell.textField.isEnabled = isSampleEditable
             cell.unitLabel?.text = String(describing: preferredUnit)
-
-            if originalCarbEntry == nil {
-                DispatchQueue.main.async {
-                    cell.textField.becomeFirstResponder()
-                }
-            }
-
             cell.delegate = self
 
             return cell
@@ -282,12 +290,6 @@ public final class CarbEntryEditViewController: UITableViewController {
                     textField.customInput = foodKeyboard
                 }
 
-                if originalCarbEntry == nil {
-                    DispatchQueue.main.async {
-                        cell.textField.becomeFirstResponder()
-                    }
-                }
-
                 return cell
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: FoodTypeShortcutCell.className, for: indexPath) as! FoodTypeShortcutCell
@@ -319,6 +321,20 @@ public final class CarbEntryEditViewController: UITableViewController {
         }
     }
 
+    public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        switch Row(rawValue: indexPath.row)! {
+        case .value, .date:
+            break
+        case .foodType:
+            if usesCustomFoodType, shouldBeginEditingFoodType, let cell = cell as? TextFieldTableViewCell {
+                shouldBeginEditingFoodType = false
+                cell.textField.becomeFirstResponder()
+            }
+        case .absorptionTime:
+            break
+        }
+    }
+
     public override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         return LocalizedString("Optional Fat and protein entry will result in additional dosing over an extended duration for fat and protein calories, and will override manual entry of duration of absorption.", comment: "Carb entry section footer text explaining absorption time")
     }
@@ -336,6 +352,7 @@ public final class CarbEntryEditViewController: UITableViewController {
         switch tableView.cellForRow(at: indexPath) {
         case is FoodTypeShortcutCell:
             usesCustomFoodType = true
+            shouldBeginEditingFoodType = true
             tableView.reloadRows(at: [IndexPath(row: Row.foodType.rawValue, section: 0)], with: .none)
         default:
             break
@@ -468,6 +485,7 @@ extension CarbEntryEditViewController: FoodTypeShortcutCellDelegate {
         case .custom:
             tableView.beginUpdates()
             usesCustomFoodType = true
+            shouldBeginEditingFoodType = true
             tableView.reloadRows(at: [IndexPath(row: Row.foodType.rawValue, section: 0)], with: .fade)
             tableView.endUpdates()
         }
