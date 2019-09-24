@@ -323,7 +323,7 @@ public final class CarbEntryEditViewController: UITableViewController {
 
     public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         switch Row(rawValue: indexPath.row)! {
-        case .value, .date:
+        case .value, .date, .fat, .protein:
             break
         case .foodType:
             if usesCustomFoodType, shouldBeginEditingFoodType, let cell = cell as? TextFieldTableViewCell {
