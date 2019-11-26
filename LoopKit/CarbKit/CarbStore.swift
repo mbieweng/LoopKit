@@ -204,7 +204,7 @@ public final class CarbStore: HealthKitSampleStore {
         absorptionTimeOverrun: Double = 1.5,
         calculationDelta: TimeInterval = 5 /* minutes */ * 60,
         effectDelay: TimeInterval = 10 /* minutes */ * 60,
-        carbAbsorptionModel: CarbAbsorptionModel = .adaptiveRateNonlinear
+        carbAbsorptionModel: CarbAbsorptionModel = .nonlinear
     ) {
         self.cacheStore = cacheStore
         self.defaultAbsorptionTimes = defaultAbsorptionTimes
