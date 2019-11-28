@@ -92,7 +92,7 @@ public final class CarbEntryEditViewController: UITableViewController {
                     quantity: quantity,
                     startDate: date,
                     foodType: foodType,
-                    absorptionTime: 7200,
+                    absorptionTime: absorptionTime,
                     externalID: originalCarbEntry?.externalID
                 )
             } else {
