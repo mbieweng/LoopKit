@@ -189,9 +189,9 @@ public final class CarbEntryEditViewController: UITableViewController {
         tableView.register(DateAndDurationTableViewCell.nib(), forCellReuseIdentifier: DateAndDurationTableViewCell.className)
 
         if originalCarbEntry != nil {
-            title = LocalizedString("carb-entry-title-edit", value: "Edit Carb Entry", comment: "The title of the view controller to edit an existing carb entry")
+            title = LocalizedString("Edit Carb Entry", value: "Edit Carb Entry", comment: "The title of the view controller to edit an existing carb entry")
         } else {
-            title = LocalizedString("carb-entry-title-add", value: "Add Carb Entry", comment: "The title of the view controller to create a new carb entry")
+            title = LocalizedString("Add Carb Entry", value: "Add Carb Entry", comment: "The title of the view controller to create a new carb entry")
         }
     }
 
@@ -472,7 +472,7 @@ extension CarbEntryEditViewController: DatePickerTableViewCellDelegate {
 
 
 extension CarbEntryEditViewController: FoodTypeShortcutCellDelegate {
-    func foodTypeShortcutCellDidUpdateSelection(_ cell: FoodTypeShortcutCell) {
+    public func foodTypeShortcutCellDidUpdateSelection(_ cell: FoodTypeShortcutCell) {
         var absorptionTime: TimeInterval?
 
         switch cell.selectionState {
@@ -502,7 +502,7 @@ extension CarbEntryEditViewController: FoodTypeShortcutCellDelegate {
 
 
 extension CarbEntryEditViewController: EmojiInputControllerDelegate {
-    func emojiInputControllerDidAdvanceToStandardInputMode(_ controller: EmojiInputController) {
+    public func emojiInputControllerDidAdvanceToStandardInputMode(_ controller: EmojiInputController) {
         if let cell = tableView.cellForRow(at: IndexPath(row: Row.foodType.rawValue, section: 0)) as? TextFieldTableViewCell, let textField = cell.textField as? CustomInputTextField, textField.customInput != nil {
             let customInput = textField.customInput
             textField.customInput = nil
@@ -512,7 +512,7 @@ extension CarbEntryEditViewController: EmojiInputControllerDelegate {
         }
     }
 
-    func emojiInputControllerDidSelectItemInSection(_ section: Int) {
+    public func emojiInputControllerDidSelectItemInSection(_ section: Int) {
         guard !absorptionTimeWasEdited, section < orderedAbsorptionTimes.count else {
             return
         }

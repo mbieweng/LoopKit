@@ -428,7 +428,13 @@ extension AddEditOverrideTableViewController {
     }
 
     private func setupBarButtonItems() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save))
+        switch inputMode {
+        case .newPreset, .editPreset, .editOverride:
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(save))
+        case .customizePresetOverride, .customOverride:
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("Enable", comment: "The button text for enabling a temporary override"), style: .done, target: self, action: #selector(save))
+        }
+
         updateSaveButtonEnabled()
 
         switch inputMode {
@@ -592,7 +598,7 @@ extension AddEditOverrideTableViewController: TextFieldTableViewCellDelegate {
 }
 
 extension AddEditOverrideTableViewController: EmojiInputControllerDelegate {
-    func emojiInputControllerDidAdvanceToStandardInputMode(_ controller: EmojiInputController) {
+    public func emojiInputControllerDidAdvanceToStandardInputMode(_ controller: EmojiInputController) {
         guard
             let indexPath = indexPath(for: .symbol),
             let cell = tableView.cellForRow(at: indexPath) as? LabeledTextFieldTableViewCell,

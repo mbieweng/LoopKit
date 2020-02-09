@@ -14,7 +14,7 @@
 "com.loudnate.CarbKit.deleteCarbEntryUnownedErrorDescription" = "認証が拒否されました";
 
 /* The error recovery suggestion when attempting to delete a sample not shared by the current app */
-"com.loudnate.carbKit.sharingDeniedErrorRecoverySuggestion" = "このサンプルはヘルスケアアプリから削除できます";
+"com.loudnate.carbKit.sharingDeniedErrorRecoverySuggestion" = "This sample can be deleted from the Health app";
 
 /* Generic pump error description */
 "Communication Failure" = "通信エラー";
@@ -40,14 +40,23 @@
 /* Glucose trend flat */
 "Flat" = "平坦";
 
+/* The short unit display string for grams per U */
+"g/U" = "g/U";
+
 /* Generic pump error description */
 "Invalid Configuration" = "コンフィグレーションが無効";
 
 /* Recovery instruction for a certain bolus failure */
 "It is safe to retry" = "やり直せます";
 
-/* The short unit display string for millimoles of glucose per liter */
+/* The short unit display string for milligrams per deciliter per U */
+"mg/dL/U" = "mg/dL/U";
+
+/* The short unit display string for millimoles per liter */
 "mmol/L" = "mmol/L";
+
+/* The short unit display string for millimoles per liter per U */
+"mmol/L/U" = "mmol/L/U";
 
 /* Sensor state description for the non-valid state */
 "Needs Attention" = "注意してください";
@@ -61,12 +70,6 @@
 /* The error recovery suggestion when Health sharing was denied */
 "Please re-enable sharing in Health" = "ヘルスケアの共有を有効にしてください";
 
-/* Format string for combining localized numeric value and unit with a space. (1: numeric value)(2: unit) */
-"quantity-and-unit-space" = "%1$@ %2$@";
-
-/* Format string for combining localized numeric value and unit without spacing. (1: numeric value)(2: unit) */
-"quantity-and-unit-tight" = "%1$@%2$@";
-
 /* Glucose trend up */
 "Rising" = "上昇";
 
@@ -79,6 +82,18 @@
 /* The short unit display string for international units of insulin */
 "U" = "U";
 
+/* The short unit display string for international units of insulin per hour */
+"U/hr" = "U/時";
+
+/* The long unit display string for a singular international unit of insulin */
+"Unit" = "Unit";
+
+/* The long unit display string for a singular international unit of insulin per hour */
+"Unit/hour" = "Unit/hour";
+
 /* The long unit display string for international units of insulin */
 "Units" = "単位";
+
+/* The long unit display string for international units of insulin per hour */
+"Units/hour" = "U/時";
 
